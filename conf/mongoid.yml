@@ -7,7 +7,7 @@ development:
       # (required).
       database: app_development
       # Provides the hosts the default session can connect to. Must be an array
-      # of host:port pairs. (required)
+      # of host:port pairs.. (required)
       hosts:
         - localhost:27017
       options:
