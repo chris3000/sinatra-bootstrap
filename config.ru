@@ -1,0 +1,7 @@
+require 'rubygems'
+require 'bundler'
+
+
+root = ::File.dirname(__FILE__)
+require ::File.join( root, 'app' )
+run MyApp.new
