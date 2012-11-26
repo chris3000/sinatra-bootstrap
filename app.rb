@@ -2,15 +2,28 @@
 require 'sinatra'
 require 'sinatra/reloader'
 require 'haml'
+require 'yaml'
+require 'omniauth'
+require 'omniauth-facebook'
+require 'omniauth-twitter'
 
 class MyApp < Sinatra::Application
   set :environment, :development
+  set :domain, "127.0.0.1:9292"
+  #set :domain, "my-awesome-website.com"
   set :company, "Some Company Name"
   set :site_name, "My Awesome Website"
+
  # set :environment, :production
   set :root, ::File.dirname(__FILE__)
 
   enable :sessions
+  use OmniAuth::Builder do
+    cred = YAML.load_file("conf/keys.yml")
+    puts cred.inspect
+    provider :facebook, cred["facebook"]["id"],cred["facebook"]["secret"]
+    provider :twitter, cred["twitter"]["consumer_key"], cred["twitter"]["consumer_secret"]
+  end
 
   configure :production do
     set :haml, { :ugly=>true }

@@ -1,0 +1,12 @@
+#this is an example of the keys file.  The actual keys file is not checked
+#into git for obvious reasons
+---
+facebook:
+  app_name: my-app
+  id: 04958409850498
+  secret: dflkjfdlksjflkjdslfkj
+twitter:
+  app_name: twitter-app
+  consumer_key: sdlkfjlsdkjfoeiuro
+  consumer_secret: DSLKFJIELGFLSDKJ0P4390480394U
+
