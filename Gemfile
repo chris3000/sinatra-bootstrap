@@ -7,5 +7,6 @@ gem 'json'
 gem 'omniauth', "~> 1.1.1"
 gem 'omniauth-oauth2', "~> 1.1.1"
 gem 'omniauth-github', "~> 1.0.3"
-gem 'omniauth-facebook'
-gem 'omniauth-twitter'
+gem 'omniauth-facebook', "~> 1.4.1"
+gem 'omniauth-twitter', "~> 0.0.14"
+gem 'omniauth-identity', "~> 1.1.0"

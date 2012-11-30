@@ -6,6 +6,7 @@ require 'yaml'
 require 'omniauth'
 require 'omniauth-facebook'
 require 'omniauth-twitter'
+require 'omniauth-identity'
 
 class MyApp < Sinatra::Application
   set :environment, :development
@@ -16,13 +17,15 @@ class MyApp < Sinatra::Application
 
  # set :environment, :production
   set :root, ::File.dirname(__FILE__)
-
+  #change the session secret to something unique and secret
+  set :session_secret, "go gators"
   enable :sessions
+
   use OmniAuth::Builder do
     cred = YAML.load_file("conf/keys.yml")
-    puts cred.inspect
     provider :facebook, cred["facebook"]["id"],cred["facebook"]["secret"]
     provider :twitter, cred["twitter"]["consumer_key"], cred["twitter"]["consumer_secret"]
+    provider :identity, :fields => [:username, :email], :model => User
   end
 
   configure :production do
@@ -37,6 +40,14 @@ class MyApp < Sinatra::Application
   helpers do
     include Rack::Utils
     alias_method :h, :escape_html
+
+    def current_user
+      @current_user ||= User.where(:id => session[:user_id]).first if session[:user_id]
+    end
+
+    def authenticated?
+      session.has_key?(:user_id)
+    end
   end
 end
 

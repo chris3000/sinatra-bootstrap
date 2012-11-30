@@ -2,3 +2,14 @@
 %br
 %a{:href=>"http://#{settings.domain}/auth/twitter"} Login with Twitter
 %br
+%a{:href=>"http://#{settings.domain}/auth/identity"} Login with Username
+
+%form{ :action => "/auth/identity/callback", :method => "post"}
+  %fieldset
+    %label{:for => :auth_key} Username
+    %input{:type => "text", :name => :auth_key, :class => "input-xlarge"}
+    %label{:for => :password} Password
+    %input{:type => "password", :name => :password, :class => "input-xlarge"}
+  %input{:type => "submit", :value => "Sign in", :class => "button"}
+%br
+= "user= #{current_user.username}" unless !authenticated?

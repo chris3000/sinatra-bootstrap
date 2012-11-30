@@ -1,0 +1,16 @@
+.container
+  %h5
+    ="Greetings #{auth.nickname} from #{auth.provider}! "
+  %br/
+  You're almost done.  If this is the first time you've used this site,
+  Please choose a username and password below.  If you already have a username,
+  then please sign in with your password.
+  %br/
+  * You will only have to do this once.  Once you sign in or create a new account,
+  ="you will be able to use #{auth.provider} to log in."
+  %br/
+  %a{:href => "account/new"}I'd like to choose a username and password.
+  %br/
+  %a{:href => "account/login"} I'd like to log in.
+  %br/
+  ="Both of these actions will link your account to your #{auth.provider} account."
