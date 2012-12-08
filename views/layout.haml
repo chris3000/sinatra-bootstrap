@@ -1,21 +1,20 @@
-!!! XML
-!!! 1.1
+!!! 5
 %html(xmlns="http://www.w3.org/1999/xhtml")
   %head
     %meta{:charset => "utf-8"}
-      %meta{:content => "IE=edge,chrome=1", "http-equiv" => "X-UA-Compatible"}
-        %title
-        %meta{:content => "", :name => "description"}
-          %meta{:content => "width=device-width", :name => "viewport"}
-            %link{:href => "/css/bootstrap.min.css", :rel => "stylesheet"}
-              :css
-                body {
-                    padding-top: 60px;
-                    padding-bottom: 40px;
-                }
-                      %link{:href => "css/bootstrap-responsive.min.css", :rel => "stylesheet"}
-                %link{:href => "css/main.css", :rel => "stylesheet"}
-                  %script{:src => "js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"}
+    %meta{:content => "IE=edge,chrome=1", "http-equiv" => "X-UA-Compatible"}
+    %title= settings.site_name || "Welcome"
+    %meta{:content => "", :name => "description"}
+    %meta{:content => "width=device-width", :name => "viewport"}
+    %link{:href => "/css/bootstrap.min.css", :rel => "stylesheet"}
+      :css
+        body {
+            padding-top: 60px;
+            padding-bottom: 40px;
+        }
+      %link{:href => "/css/bootstrap-responsive.min.css", :rel => "stylesheet"}
+      %link{:href => "/css/main.css", :rel => "stylesheet"}
+      %script{:src => "/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"}
   %body
     /[if lt IE 7]
       <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
@@ -51,9 +50,10 @@
                     %a{:href => "#"} One more separated link
             %form.navbar-form.pull-right
               - if !authenticated?
-                %input.span2{:placeholder => "Username", :type => "text"}
-                  %input.span2{:placeholder => "Password", :type => "password"}
-                    %button.btn{:type => "submit"} Sign in
+                /%input.span2{:placeholder => "Username", :type => "text"}
+                /  %input.span2{:placeholder => "Password", :type => "password"}
+                %a.btn.btn-success{:type => "submit", :href => "/signup"} Sign up for free
+                %a.btn{:type => "submit", :href =>"/login"} Sign in
               - else
                 %li.navbar-text
                   = "Greetings #{current_user.username}!"

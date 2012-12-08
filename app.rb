@@ -1,12 +1,13 @@
 # encoding: utf-8
 require 'sinatra'
+require 'rack-flash'
 require 'sinatra/reloader'
 require 'haml'
 require 'yaml'
 require 'omniauth'
 require 'omniauth-facebook'
 require 'omniauth-twitter'
-require 'omniauth-identity'
+#require 'omniauth-identity'
 
 class MyApp < Sinatra::Application
   set :environment, :development
@@ -20,12 +21,32 @@ class MyApp < Sinatra::Application
   #change the session secret to something unique and secret
   set :session_secret, "go gators"
   enable :sessions
+  use Rack::Flash
 
   use OmniAuth::Builder do
+    OmniAuth.config.on_failure = Proc.new { |env|
+      OmniAuth::FailureEndpoint.new(env).redirect_to_failure
+    }
     cred = YAML.load_file("conf/keys.yml")
     provider :facebook, cred["facebook"]["id"],cred["facebook"]["secret"]
     provider :twitter, cred["twitter"]["consumer_key"], cred["twitter"]["consumer_secret"]
-    provider :identity, :fields => [:username, :email], :model => User
+    provider :identity, :fields => [:username, :email], :model => User, :on_failed_registration => lambda { |env|
+      old_user = env['omniauth.identity']
+      user = User.new
+      user.username= old_user.username
+      user.email=old_user.email
+      #user.errors.full_messages.each do |msg|
+       # puts msg
+      #end
+      #puts "validated = #{user.valid?}"
+      env['rack.session'][:identity] = user
+      env['rack.session'][:errors] = env['omniauth.identity'].errors.full_messages
+
+      #env['rack.session']['identity_username'] = env['omniauth.identity']['username']
+      resp = Rack::Response.new("", 302)
+      resp.redirect('/signup')
+      resp.finish
+    }
   end
 
   configure :production do

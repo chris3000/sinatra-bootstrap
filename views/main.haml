@@ -2,23 +2,27 @@
   / Main hero unit for a primary marketing message or call to action
   .hero-unit
     %h1 Hello, world!
-    %p This is a template for a simple marketing or informational website. It includes a large callout called the hero unit and three supporting pieces of content. Use it as a starting point to create something more unique.
+    %p This is a template for a simple social website.
+    It includes a large callout called the hero unit and three supporting pieces of content.
+    Use it as a starting point to create something more unique.
     %p
-      %a.btn.btn-primary.btn-large Learn more &raquo;
+      %a.btn.btn-primary.btn-large{:href => '/signup'} Sign up! &raquo;
   / Example row of columns
   .row
     .span4
-      %h2 Heading
-      %p Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
+      %h2 OmniAuth
+      %p All of the authentication on this site is handled by the omniauth gem.
       %p
-        %a.btn{:href => "#"} View details &raquo;
+        %a.btn{:href => "http://www.omniauth.org/"} View details &raquo;
     .span4
-      %h2 Heading
-      %p Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
+      %h2 Mongoid
+      %p Models are persisted in MongoDB using the Mongoid gem.
       %p
-        %a.btn{:href => "#"} View details &raquo;
+        %a.btn{:href => "http://mongoid.org/en/mongoid/index.html"} View details &raquo;
     .span4
-      %h2 Heading
-      %p Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.
+      %h2 Chris Kairalla
       %p
-        %a.btn{:href => "#"} View details &raquo;
+        This template was created by Chris Kairalla, based on
+        %a{:href => "https://github.com/Phrogz/riblits"} a template by Phrogz.
+      %p
+        %a.btn{:href => "http://chris3000.com"} View details &raquo;
