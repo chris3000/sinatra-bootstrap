@@ -18,6 +18,7 @@ class User
   field :username, :type => String
   field :email, :type => String
   field :accept_terms,  :type => Boolean
+  field :verified, :type => Boolean
 
   attr_accessor         :password, :password_confirmation
   attr_protected        :password_hash
@@ -41,21 +42,23 @@ class User
                       :with => /^[-\w\._]+$/i,
                       :message => "should only contain letters, numbers, '.', '-', or '_'"
   validates_presence_of :email,
-                        :message => "Email Address is Required."
+                        :message => "Email address is required."
   validates_uniqueness_of :email,
-                          :message => "Email Address Already In Use. Have You Forgot Your Username?"
+                          :message => "Email address is already in use. Have you forgotten your Username?"
   validates_format_of :email,
                       :with => /^[-a-z0-9_+\.]+\@([-a-z0-9]+\.)+[a-z0-9]{2,4}$/i,
-                      :message => "Please Enter a Valid Email Address."
+                      :message => "Please enter a valid Email Address."
   validates_acceptance_of :accept_terms,
                           :allow_nil => false,
                           :accept => true,
                           :message => "Terms and Conditions Must Be Accepted."
   validates_length_of :password,
-                      :minimum => 8,
-                      :message => "Password Must Be Longer Than 8 Characters."
+                      :on => :create,
+                      :minimum => 7,
+                      :message => "Password must be at least 7 characters."
   validates_confirmation_of :password,
-                            :message => "Password Confirmation Must Match Given Password."
+                            :on => :create,
+                            :message => "Password confirmation must match given password."
 
    # helper methods
    # Encrypts the password into the password_digest attribute.
@@ -64,6 +67,10 @@ class User
     unless unencrypted_password.empty?
       self.password_digest = Password.create(unencrypted_password)
     end
+  end
+
+  def verified?
+    verified
   end
 
   def self.find_by_username(username)
@@ -95,8 +102,6 @@ class User
 
     user_pass == password
   end
-
-
 
 =begin
   validates :username,

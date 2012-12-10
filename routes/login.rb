@@ -7,19 +7,35 @@ class MyApp < Sinatra::Application
     haml :login, :locals => {:user => current_user}
   end
 
-  get '/signup' do
-    identity = session[:identity]
-    unless identity.valid?
-      identity.errors.each {|k, v| puts "#{k.capitalize}: #{v}"}
+  post "/login" do
+    user = User.authenticate(params[:username], params[:password])
+    if user.is_a? User
+      session[:user_id] = user.id
+      redirect("/account")
+    elsif user.is_a? Hash
+       flash[:error] = user[:error]
+      haml :login
     end
-    session[:identity] = nil
-    errors = session[:errors]
-    session[:errors] = nil
-    haml :signup, :locals => {:identity => identity, :errors => errors}
+  end
+
+  get '/signup' do
+    haml :signup, :locals =>{:user => nil}
   end
 
   post '/signup' do
-    user = User.create
+    user = User.create @params
+    if user.nil? || user.errors.any?
+     halt haml :signup, :locals => {:user => user}
+    end
+    session[:user_id] = user.id
+    redirect('/signup/link_acct')
+  end
+
+  get '/signup/link_acct' do
+    redirect('/signup') unless authenticated?
+    user = current_user
+    redirect('/') if user.verified?
+    haml :link_acct, :locals => {:user => user}
   end
 
   get '/logout' do
@@ -69,8 +85,10 @@ class MyApp < Sinatra::Application
       #- is user already logged in through some other means?
       if (current_user)
         #create new authentication and add it to user
-        current_user.authentications << new_auth
-        current_user.save
+        user = current_user
+        user.authentications << new_auth
+        user.verified = true
+        user.save!
       else
         session[:auth_provider] = auth_req['provider']
         session[:auth_uid] = auth_req['uid']
@@ -78,9 +96,7 @@ class MyApp < Sinatra::Application
         redirect "/auth/#{new_auth.provider}/link"
       end
     end
-    erb "<h1>#{params[:provider]}</h1>
-         <pre>#{JSON.pretty_generate(auth_req)}</pre>
-          <pre>#{JSON.pretty_generate(current_user)}</pre>"
+    redirect '/account'
   end
 
   get "/auth/:provider/link" do

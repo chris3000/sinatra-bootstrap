@@ -4,4 +4,10 @@ class MyApp < Sinatra::Application
     @title = settings.environment
       haml :main
   end
+
+  get "/account" do
+    user = current_user
+    redirect '/signup' unless user
+    haml :account, :locals =>{:user => user}
+  end
 end

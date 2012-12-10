@@ -1,0 +1,19 @@
+.container
+  %dl.dl-horizontal
+    %dt
+      Username
+    %dd
+      = user.username
+    %dt
+      Email
+    %dd
+      = user.email
+    %dt
+      verified?
+    %dd
+      = user.verified ? "Yes" : "No"
+    - user.authentications.each do |auth|
+      %dt
+        Provider
+      %dd
+        = auth.provider

@@ -1,22 +1,28 @@
 %h3 New Account
-= "#{identity.username}" unless identity.nil?
-- if errors && errors.any?
-  %h2
-    #{errors.count} errors prohibited this account from being saved:
-  - errors.each do |msg|
-    %li
-      = msg
+- if user && user.errors.any?
+  #error_messages
+    %h2
+      #{pluralize(user.errors.count, "error")} prohibited this account from being saved:
+    - user.errors.messages.each do |msg|
+      %dl
+        %dt
+          = msg[0]
+          - msg[1].each do |msg_text|
+            %dd
+              = msg_text
 %form{ :action => "/signup", :method => "post"}
   %fieldset
     %label{:for => :username} Username
-    - username_ph = identity.username ||= "" unless identity.nil?
+    - username_ph = user.username ||= "" unless user.nil?
     %input{:type => "text", :name => :username, :class => "input-xlarge", :value => "#{username_ph}"}
-    - email_ph = identity.email ||= "" unless identity.nil?
+    - email_ph = user.email ||= "" unless user.nil?
     %label{:for => :email} Email
-    %input{:type => "text", :name => :email, :class => "input-xlarge", }
+    %input{:type => "text", :name => :email, :class => "input-xlarge", :value => "#{email_ph}"}
     %label{:for => :password} Password
     %input{:type => "password", :name => :password, :class => "input-xlarge"}
     %label{:for => :password_confirmation} Confirm Password
     %input{:type => "password", :name => :password_confirmation, :class => "input-xlarge"}
+    %label{:for => :accept_terms, :class => "checkbox"}
+      %input{:type => "checkbox", :name => :accept_terms, :value => "true"} I accept the Terms and Conditions of this site.
   %input{:type => "submit", :value => "Create an account", :class => "btn.btn-success"}
 %br

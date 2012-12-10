@@ -7,10 +7,10 @@ Or login below with a username and password.
   #login_error.alert.alert-error
     ="There was an error: #{flash[:error]}"
 %p
-  %form{ :action => "/auth/identity/callback", :method => "post"}
+  %form{ :action => "/login", :method => "post"}
     %fieldset
-      %label{:for => :auth_key} Username
-      %input{:type => "text", :name => :auth_key, :class => "input-xlarge"}
+      %label{:for => :username} Username
+      %input{:type => "text", :name => :username, :class => "input-xlarge"}
       %label{:for => :password} Password
       %input{:type => "password", :name => :password, :class => "input-xlarge"}
     %input{:type => "submit", :value => "Sign in", :class => "button"}

@@ -1,3 +1,4 @@
+=begin
 class Identity
   include Mongoid::Document
   include OmniAuth::Identity::Models::Mongoid
@@ -6,3 +7,4 @@ class Identity
   field :name, type: String
   field :password_digest, type: String
 end
+=end

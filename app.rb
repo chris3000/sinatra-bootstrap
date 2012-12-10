@@ -10,7 +10,7 @@ require 'omniauth-twitter'
 #require 'omniauth-identity'
 
 class MyApp < Sinatra::Application
-  set :environment, :development
+  set :environment, (ENV['RACK_ENV'] || :development)
   set :domain, "127.0.0.1:9292"
   #set :domain, "my-awesome-website.com"
   set :company, "Some Company Name"
@@ -27,9 +27,10 @@ class MyApp < Sinatra::Application
     OmniAuth.config.on_failure = Proc.new { |env|
       OmniAuth::FailureEndpoint.new(env).redirect_to_failure
     }
-    cred = YAML.load_file("conf/keys.yml")
+    cred = YAML.load_file(File.expand_path("conf/keys.yml", settings.root))
     provider :facebook, cred["facebook"]["id"],cred["facebook"]["secret"]
     provider :twitter, cred["twitter"]["consumer_key"], cred["twitter"]["consumer_secret"]
+=begin
     provider :identity, :fields => [:username, :email], :model => User, :on_failed_registration => lambda { |env|
       old_user = env['omniauth.identity']
       user = User.new
@@ -47,6 +48,7 @@ class MyApp < Sinatra::Application
       resp.redirect('/signup')
       resp.finish
     }
+=end
   end
 
   configure :production do
@@ -61,6 +63,16 @@ class MyApp < Sinatra::Application
   helpers do
     include Rack::Utils
     alias_method :h, :escape_html
+     #stolen from rails source code
+    def pluralize(count, singular, plural = nil)
+      word = if (count == 1 || count =~ /^1(\.0+)?$/)
+               singular
+             else
+               plural || singular.pluralize
+             end
+
+      "#{count || 0} #{word}"
+    end
 
     def current_user
       @current_user ||= User.where(:id => session[:user_id]).first if session[:user_id]

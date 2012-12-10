@@ -1,0 +1,16 @@
+.container
+  %h5
+    ="Welcome #{user.username}! "
+  %br/
+  You're almost done.  We just need to verify your account.
+  #verify_facebook
+    %a{:href=>"/auth/facebook"} Verify with facebook
+  #verify_twitter
+    %a{:href=>"/auth/twitter"} Verify with Twitter
+  #verify_text
+    Verification with Facebook or Twitter is preferred.
+    %br
+    = "You can also verify by responding to an email that we send to #{user.email}."
+  #verify_email
+    %a{:href =>"verify/email"} Verify with Email
+  %br/
