@@ -1,0 +1,24 @@
+%table.table.table-striped.table-bordered.table-hover.table-condensed
+  %thead
+    %tr
+      -model_fields.each do |field|
+        %th
+          = field
+      %th Show
+      %th Edit
+      %th Delete
+  %tbody
+    -model_instances.each do |instance|
+      %tr
+        -model_fields.each do |field|
+          %td
+            = instance[field].to_s
+            - obj = (instance.send field.to_sym)
+            - if obj.is_a? Enumerable
+              = obj.join(', ')
+        %td
+          %a.btn.btn-info.btn-mini{:type => "submit", :name => "show", :href => "/admin/#{instance.class.name.downcase}/show/#{instance.id}"} Show
+        %td
+          %a.btn.btn-primary.btn-mini{:type => "submit", :name => "edit", :href => "/admin/#{instance.class.name.downcase}/edit/#{instance.id}"} Edit
+        %td
+          %a.btn.btn-danger.btn-mini{:type => "submit", :name => "delete", :href => "/admin/#{instance.class.name.downcase}/delete/#{instance.id}"} Delete

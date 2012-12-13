@@ -76,6 +76,7 @@ class MyApp < Sinatra::Application
       #yes- get user and log in session
       user = auth.user
       session[:user_id] = user.id
+      user.increment_signin_count
     else
       #no, this is a new authentication
       new_auth = Authentication.create!(

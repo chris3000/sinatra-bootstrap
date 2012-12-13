@@ -12,10 +12,12 @@ gem 'omniauth-twitter', "~> 0.0.14"
 #gem 'omniauth-identity', "~> 1.1.0"
 gem 'rack-flash3', "~> 1.0.1"
 gem 'bcrypt-ruby', "~> 3.0.1"
-
+gem 'thin'
 group :test do
+#  gem 'test-unit'
   gem 'rspec'
-  gem 'ZenTest'
-  gem 'autotest-growl'
-  gem 'autotest-fsevent'
+  gem 'webrat'
+#  gem 'ZenTest'
+#  gem 'autotest-growl'
+#  gem 'autotest-fsevent'
 end

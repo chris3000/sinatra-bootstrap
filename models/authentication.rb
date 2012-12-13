@@ -9,4 +9,7 @@ class Authentication
 
   belongs_to :user
 
+  def to_s
+    "#{provider}[ #{nickname} ]"
+  end
 end

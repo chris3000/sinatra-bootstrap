@@ -14,13 +14,13 @@ class User
   field :last_name, :type => String
   field :full_name, :type => String
   field :password_digest, :type => String
-  field :sign_in_count, :type => Integer
+  field :sign_in_count, :type => Integer, default: 1
   field :username, :type => String
   field :email, :type => String
-  field :accept_terms,  :type => Boolean
-  field :verified, :type => Boolean
+  field :accept_terms,  :type => Boolean, default: false
+  field :verified, :type => Boolean, default: false
 
-  attr_accessor         :password, :password_confirmation
+  attr_accessor         :password, :password_confirmation, :username, :email, :verified, :sign_in_count
   attr_protected        :password_hash
   #make sure password is encrypted
   #before_save :encrypt_password
@@ -60,6 +60,22 @@ class User
                             :on => :create,
                             :message => "Password confirmation must match given password."
 
+  #scaffold
+  def self.scaffold_manage
+    all_field_names = self.fields.keys
+    remove_list = ["password_digest", "accept_terms",
+                   "_id","_type",
+                   "created_at",
+                   "updated_at",
+                    "first_name", "last_name",
+                    "full_name"]
+    remove_list.each do |remove_field|
+     all_field_names.delete remove_field
+    end
+    all_field_names << "authentications"
+    all_field_names
+  end
+
    # helper methods
    # Encrypts the password into the password_digest attribute.
   def password=(unencrypted_password)
@@ -91,6 +107,7 @@ class User
 
     user_pass = Password.new(user.password_digest)
     if user_pass == password
+      user.increment_signin_count
       return user
     else
       return {:error => "Incorrect Password"}
@@ -98,23 +115,14 @@ class User
 
   end
 
+  def increment_signin_count
+    inc(:sign_in_count,1)
+  end
+
   def self.password_correct?(username, password)
 
     user_pass == password
   end
-
-=begin
-  validates :username,
-            :presence => true,
-            :uniqueness => true
-
-  validates :email,
-            :presence => true,
-            :uniqueness => true,
-            :format => { :with => /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i }
-=end
-
-#  auth_key(:username)
 
 end
 

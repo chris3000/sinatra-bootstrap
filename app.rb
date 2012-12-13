@@ -16,11 +16,11 @@ class MyApp < Sinatra::Application
   set :company, "Some Company Name"
   set :site_name, "My Awesome Website"
 
- # set :environment, :production
-  set :root, ::File.dirname(__FILE__)
+  set :root, (settings.root || File.dirname(__FILE__))
   #change the session secret to something unique and secret
   set :session_secret, "go gators"
   enable :sessions
+  #use Rack::Session::Cookie
   use Rack::Flash
 
   use OmniAuth::Builder do
@@ -30,25 +30,6 @@ class MyApp < Sinatra::Application
     cred = YAML.load_file(File.expand_path("conf/keys.yml", settings.root))
     provider :facebook, cred["facebook"]["id"],cred["facebook"]["secret"]
     provider :twitter, cred["twitter"]["consumer_key"], cred["twitter"]["consumer_secret"]
-=begin
-    provider :identity, :fields => [:username, :email], :model => User, :on_failed_registration => lambda { |env|
-      old_user = env['omniauth.identity']
-      user = User.new
-      user.username= old_user.username
-      user.email=old_user.email
-      #user.errors.full_messages.each do |msg|
-       # puts msg
-      #end
-      #puts "validated = #{user.valid?}"
-      env['rack.session'][:identity] = user
-      env['rack.session'][:errors] = env['omniauth.identity'].errors.full_messages
-
-      #env['rack.session']['identity_username'] = env['omniauth.identity']['username']
-      resp = Rack::Response.new("", 302)
-      resp.redirect('/signup')
-      resp.finish
-    }
-=end
   end
 
   configure :production do
