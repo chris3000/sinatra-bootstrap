@@ -1,4 +1,19 @@
-%table.table.table-striped.table-bordered.table-hover.table-condensed
+/modal javascript
+:javascript
+  function launch_delete_confirm_modal(model_name, model_human_id, model_id,table_row){
+    $('#modal_body_confirm').html("Are you sure you want to delete "+model_name+" "+model_human_id+"?");
+    var row_index = table_row.parentNode.parentNode.rowIndex;
+    this.delete_info = {record_id:model_id,url:"/admin/"+model_name.toLowerCase()+"/delete",table_index:row_index};
+    //$('#delete_confirm_button').val();
+    $('#delete_modal').modal('toggle');
+  };
+
+  function delete_model_record(record_id, url,table_index){
+  document.getElementById("manage_table").deleteRow(table_index);
+  $('#delete_modal').modal('toggle');
+   // $('#manage_table').deleteRow(0);
+  }
+%table.table.table-striped.table-bordered.table-hover.table-condensed#manage_table
   %thead
     %tr
       -model_fields.each do |field|
@@ -21,4 +36,19 @@
         %td
           %a.btn.btn-primary.btn-mini{:type => "submit", :name => "edit", :href => "/admin/#{instance.class.name.downcase}/edit/#{instance.id}"} Edit
         %td
-          %a.btn.btn-danger.btn-mini{:type => "submit", :name => "delete", :href => "/admin/#{instance.class.name.downcase}/delete/#{instance.id}"} Delete
+          %a.btn.btn-danger.btn-mini{:type => "submit", :name => "delete", :onclick => "launch_delete_confirm_modal('#{instance.class.name}', '#{instance.human_id}', '#{instance.id}',this);"} Delete
+/ delete modal div
+.container
+  #delete_modal.modal.hide.fade{:tabindex => "-1", :role => "dialog", :"aria-labeledby" => "deleteModal", :"aria-hidden" => "true"}
+    .modal-header
+      %button.close{:type => "button", :"data-dismiss" => "modal", :"aria-hidden" => "true"} x
+      %h3#deleteModal Delete Confirm
+      .modal-body
+        %p
+          #modal_body_confirm
+            /this gets replaced with proper info with javascript
+            = "Are you sure you want to delete ...?"
+      .modal-footer
+        %button.btn{:"data-dismiss" => "modal", :"aria-hidden" => "true"} Cancel
+        /value will get set with record id when modal is activated
+        %button.btn-primary#delete_confirm_button{:type => "submit", :onclick => "delete_model_record(delete_info.record_id, delete_info.url, delete_info.table_index)"} Delete
