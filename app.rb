@@ -2,6 +2,7 @@
 require 'sinatra'
 require 'rack-flash'
 require 'sinatra/reloader'
+require 'sinatra/json'
 require 'haml'
 require 'yaml'
 require 'omniauth'

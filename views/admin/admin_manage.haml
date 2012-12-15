@@ -8,11 +8,29 @@
     $('#delete_modal').modal('toggle');
   };
 
+  function delete_model_record_success(data){
+    console.log (data);
+    var flash = null;
+     if (data.status == "success"){
+      flash = $('#flash_info');
+      document.getElementById("manage_table").deleteRow(delete_info.table_index);
+     } else {
+      flash = $('#flash_error');
+     }
+     flash.css('display','block');
+     flash.html('<a class="close" data-dismiss="alert" href="#">&times;</a>'+data.message);
+     flash.alert();
+
+  }
+
   function delete_model_record(record_id, url,table_index){
-  document.getElementById("manage_table").deleteRow(table_index);
-  $('#delete_modal').modal('toggle');
+    $('#delete_modal').modal('toggle');
+
+  $.post(url, { id: record_id }, delete_model_record_success);
    // $('#manage_table').deleteRow(0);
   }
+#flash_error.alert.alert-error{:style => "display: none;"}
+#flash_info.alert.alert-info{:style => "display: none;"}
 %table.table.table-striped.table-bordered.table-hover.table-condensed#manage_table
   %thead
     %tr

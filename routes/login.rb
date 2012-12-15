@@ -23,7 +23,7 @@ class MyApp < Sinatra::Application
   end
 
   post '/signup' do
-    user = User.create @params
+      user = User.create @params
     if user.nil? || user.errors.any?
      halt haml :signup, :locals => {:user => user}
     end

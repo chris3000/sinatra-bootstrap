@@ -20,7 +20,7 @@ class User
   field :accept_terms,  :type => Boolean, default: false
   field :verified, :type => Boolean, default: false
 
-  #attr_accessor         :password, :password_confirmation, :username, :email, :verified, :sign_in_count
+  attr_accessor         :password, :password_confirmation
   attr_protected        :password_hash
   #make sure password is encrypted
   #before_save :encrypt_password
