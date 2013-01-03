@@ -3,11 +3,13 @@
 #Also, hat tip to: http://blog.eizesus.com/2010/03/creating-a-rails-authentication-system-on-mongoid/
 
 require 'bcrypt'
-
+require_relative 'simple_scaffold.rb'
 class User
+
   include Mongoid::Document
   include Mongoid::Timestamps # adds automagic fields created_at, updated_at
   include BCrypt
+  include SimpleScaffold
   #include OmniAuth::Identity::Models::Mongoid
 
   field :first_name, :type => String
@@ -22,13 +24,10 @@ class User
 
   attr_accessor         :password, :password_confirmation
   attr_protected        :password_hash
-  #make sure password is encrypted
-  #before_save :encrypt_password
-
-  #attr_accessible       :email, :username, :password, :password_confirmation, :errors
 
   has_many :authentications, :dependent => :delete
-
+  #belongs_to :something
+  #has_and_belongs_to_many :something_else
   #validations
   validates_presence_of :username,
                         :message => "Username is Required."
@@ -60,7 +59,14 @@ class User
                             :on => :create,
                             :message => "Password confirmation must match given password."
 
-  #scaffold
+  #scaffold stuff
+  SimpleScaffold.manage_ignore self, ["password_digest", "accept_terms", "_id","_type", "created_at", "updated_at", "first_name", "last_name", "full_name"]
+  def human_id
+    username
+  end
+
+=begin
+
   def self.scaffold_manage
     all_field_names = self.fields.keys
     remove_list = ["password_digest", "accept_terms",
@@ -75,11 +81,7 @@ class User
     all_field_names << "authentications"
     all_field_names
   end
-
-  #something that ID's the model to a human
-  def human_id
-     username
-  end
+=end
 
    # helper methods
    # Encrypts the password into the password_digest attribute.

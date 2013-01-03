@@ -8,9 +8,11 @@ require 'yaml'
 require 'omniauth'
 require 'omniauth-facebook'
 require 'omniauth-twitter'
+require 'mongoid'
 #require 'omniauth-identity'
 
 class MyApp < Sinatra::Application
+  configure do
   set :environment, (ENV['RACK_ENV'] || :development)
   set :domain, "127.0.0.1:9292"
   #set :domain, "my-awesome-website.com"
@@ -24,6 +26,10 @@ class MyApp < Sinatra::Application
   #use Rack::Session::Cookie
   use Rack::Flash
 
+  #configure Mongoid
+  Mongoid.load!(::File.expand_path("conf/mongoid.yml", settings.root))
+
+  #configure omniauth
   use OmniAuth::Builder do
     OmniAuth.config.on_failure = Proc.new { |env|
       OmniAuth::FailureEndpoint.new(env).redirect_to_failure
@@ -32,13 +38,14 @@ class MyApp < Sinatra::Application
     provider :facebook, cred["facebook"]["id"],cred["facebook"]["secret"]
     provider :twitter, cred["twitter"]["consumer_key"], cred["twitter"]["consumer_secret"]
   end
-
+  end
   configure :production do
     set :haml, { :ugly=>true }
     set :clean_trace, true
   end
 
   configure :development do
+    puts "configuring development in app"
       register Sinatra::Reloader
   end
 

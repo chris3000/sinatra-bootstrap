@@ -42,7 +42,7 @@
       %th Delete
   %tbody
     -model_instances.each do |instance|
-      %tr
+      %tr{:id=#{instance.id}}
         -model_fields.each do |field|
           %td
             = instance[field].to_s

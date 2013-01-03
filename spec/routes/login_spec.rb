@@ -50,22 +50,19 @@ describe "Login and Signup pages" do
     fill_in "password_confirmation", :with => "secret_password"
     check "accept_terms"
     click_button "Create an account"
-    assert_contain "twitter"
-    #response.contain('a').should be_true
-    #assert_contain "twitter"
-    #assert_have_selector
-    #assert_not_contain "Username or password are incorrect."
+    follow_redirect!
+    last_response.should contain("Welcome")
   end
 
 
-  @bad_login = {
+  @bad_signup = {
       :username => "a", #not long enough
       :password => "b", #not long_enough
       :password_confirmation => "c", #not the same as password
       :email => "abc"
   }
   it "should have errors if new user is invalid" do
-    post "/signup", @bad_login
+    post "/signup", @bad_signup
     last_response.body.match("error_messages")
     last_response.should be_ok
   end
