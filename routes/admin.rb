@@ -15,9 +15,9 @@ class MyApp < Sinatra::Application
   get "/admin/:model/manage/?" do
     model_classname = params['model'].capitalize
     model_class = Kernel.const_get(model_classname)
-    if model_class.singleton_methods.include? :scaffold_manage
-      model_fields = model_class.scaffold_manage
-      puts "I found scaffold manage"
+    if model_class.singleton_methods.include? :scaffold_manage_headings
+      model_field_headings = model_class.scaffold_manage_headings
+      puts "I found scaffold manage headings"
     else
       puts "defaulting to all fields"
       model_fields = model_class.fields.keys
@@ -25,9 +25,13 @@ class MyApp < Sinatra::Application
 #    test_user = User.find_by_username "chris3000"
 #    auth = "username"
 #    puts (test_user.send auth.to_sym).inspect
-    model_instances = model_class.limit(20).skip(0)
+    model_instances = []
+    models = model_class.limit(20).skip(0)
+    models.each do |model|
+       model_instances << model.scaffold_manage
+    end
     haml :'admin/admin_manage', :layout => :'admin/admin_layout', :locals =>{:model_instances => model_instances,
-                                                                             :model_fields => model_fields}
+                                                                             :model_field_headings => model_field_headings}
   end
 
   post "/admin/:model/delete/?" do

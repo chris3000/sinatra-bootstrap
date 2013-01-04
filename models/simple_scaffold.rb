@@ -55,8 +55,9 @@ module SimpleScaffold
     ignore_fields = @update_ignore_fields if scaffold_type == :update
     ignore_fields = @new_ignore_fields if scaffold_type == :new
     ignore_fields = @show_ignore_fields if scaffold_type == :show
-    sc = {:heading_titles => heading_titles}
+    sc = {:heading_titles => heading_titles, :model_name => p_name}
     sc[:human_id] = ("HEADINGS" if heading_titles) || (parent.human_id || parent._id)
+    sc[:id] = ("HEADINGS" if heading_titles) || parent._id
     fields = {}
     parent.fields.each do |field|
       field_obj = field[1]

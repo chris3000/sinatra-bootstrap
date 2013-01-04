@@ -34,27 +34,29 @@
 %table.table.table-striped.table-bordered.table-hover.table-condensed#manage_table
   %thead
     %tr
-      -model_fields.each do |field|
-        %th
+      -model_field_headings[:fields].each do |field, value|
+        %th{:id => "#{field}"}
           = field
+      -model_field_headings[:associations].each do |assoc, ass_value|
+        - ass_value.each do |av|
+          - assoc_name = "#{assoc} #{av}"
+          %th
+            = assoc_name
       %th Show
       %th Edit
       %th Delete
   %tbody
-    -model_instances.each do |instance|
-      %tr{:id=#{instance.id}}
-        -model_fields.each do |field|
+    -model_instances.each do |model_instance|
+      %tr{:id => "#{model_instance[:id]}"}
+        - model_instance[:fields].each do |field, value|
           %td
-            = instance[field].to_s
-            - obj = (instance.send field.to_sym)
-            - if obj.is_a? Enumerable
-              = obj.join(', ')
+            = value
         %td
-          %a.btn.btn-info.btn-mini{:type => "submit", :name => "show", :href => "/admin/#{instance.class.name.downcase}/show/#{instance.id}"} Show
+          %a.btn.btn-info.btn-mini{:type => "submit", :name => "show", :href => "/admin/#{model_instance[:model_name].downcase}/show/#{model_instance[:id]}"} Show
         %td
-          %a.btn.btn-primary.btn-mini{:type => "submit", :name => "edit", :href => "/admin/#{instance.class.name.downcase}/edit/#{instance.id}"} Edit
+          %a.btn.btn-primary.btn-mini{:type => "submit", :name => "edit", :href => "/admin/#{model_instance[:model_name].downcase}/edit/#{model_instance[:id]}"} Edit
         %td
-          %a.btn.btn-danger.btn-mini{:type => "submit", :name => "delete", :onclick => "launch_delete_confirm_modal('#{instance.class.name}', '#{instance.human_id}', '#{instance.id}',this);"} Delete
+          %a.btn.btn-danger.btn-mini{:type => "submit", :name => "delete", :onclick => "launch_delete_confirm_modal('#{model_instance[:model_name].downcase}', '#{model_instance[:human_id]}', '#{model_instance[:id]}',this);"} Delete
 / delete modal div
 .container
   #delete_modal.modal.hide.fade{:tabindex => "-1", :role => "dialog", :"aria-labeledby" => "deleteModal", :"aria-hidden" => "true"}
