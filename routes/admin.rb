@@ -12,9 +12,20 @@ class MyApp < Sinatra::Application
       haml :'admin/admin_main', :layout => :'admin/admin_layout'
   end
 
+  def get_model_class class_name
+    Kernel.const_get(class_name.capitalize)
+  end
+
+  get "admin/:model/show/:id" do
+    model_class = get_model_class params['model']
+    model = model_class.scaffold_show
+    puts ""
+    haml :'admin/admin_show', :layout => :'admin/admin_layout', :locals =>{:model => model_instances,
+                                                                             :model_field_headings => model_field_headings}
+  end
+
   get "/admin/:model/manage/?" do
-    model_classname = params['model'].capitalize
-    model_class = Kernel.const_get(model_classname)
+    model_class = get_model_class params['model']
     if model_class.singleton_methods.include? :scaffold_manage_headings
       model_field_headings = model_class.scaffold_manage_headings
       puts "I found scaffold manage headings"

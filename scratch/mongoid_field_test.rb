@@ -15,7 +15,7 @@ test1 = User.find_by_username("test_user1")
 #puts "human id= #{test1.human_id}"
 test1_man_scaff = test1.scaffold_manage
 puts test1_man_scaff.inspect
-auth1 = Authentication.find(test1_man_scaff[:associations][:has_many][0][:authentications][:ids][0])
+auth1 = Authentication.find(test1_man_scaff[:associations][:has_many][0][:authentications][:ids][0][:id])
 puts auth1.scaffold_manage.inspect
 puts User.scaffold_manage_headings.inspect
 puts Authentication.scaffold_manage_headings.inspect

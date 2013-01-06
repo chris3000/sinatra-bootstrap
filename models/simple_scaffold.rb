@@ -13,6 +13,10 @@ module SimpleScaffold
     SimpleScaffold.scaffold :manage, self
   end
 
+  def scaffold_show
+    SimpleScaffold.scaffold :show, self
+  end
+
   def scaffold_manage_headings
     SimpleScaffold.scaffold :manage, self, :headings
   end
@@ -29,13 +33,22 @@ module SimpleScaffold
         macro = ass_object.macro
         name = ass_object.name
         class_name = ass_object.class_name
-        ids = []
-        if macro == :has_many && !heading_titles
-          ids |= parent.send("#{class_name.downcase}_ids")
-        elsif macro == :belongs_to && !heading_titles
-          ids << parent.send("#{class_name.downcase}_id")
+        it_has_many = (macro == :has_many || macro == :has_and_belongs_to_many || macro == :embeds_many)
+        if it_has_many && !heading_titles
+          count = parent.send("#{name}").count
+        else
+          count = 1
         end
-        value_obj = (name.to_sym if heading_titles)||({name.to_sym => {:class_name => class_name, :ids => ids }})
+        ids = []
+        max = 5
+        id_amount = (max if count > max) || count
+        if !heading_titles
+          objs= (parent.send("#{name}").limit(id_amount) if it_has_many) || [parent.send("#{name}")]
+          objs.each do |obj|
+            ids << {:id => obj.id, :human_id => obj.human_id}
+          end
+        end
+        value_obj = (name.to_sym if heading_titles)||({name.to_sym => {:class_name => class_name, :count => count, :ids => ids }})
         #puts ids.inspect
         if associations[macro]
           associations[macro].merge!(value_obj)
@@ -55,6 +68,7 @@ module SimpleScaffold
     ignore_fields = @update_ignore_fields if scaffold_type == :update
     ignore_fields = @new_ignore_fields if scaffold_type == :new
     ignore_fields = @show_ignore_fields if scaffold_type == :show
+    ignore_fields = [] if ignore_fields.nil?
     sc = {:heading_titles => heading_titles, :model_name => p_name}
     sc[:human_id] = ("HEADINGS" if heading_titles) || (parent.human_id || parent._id)
     sc[:id] = ("HEADINGS" if heading_titles) || parent._id

@@ -51,6 +51,16 @@
         - model_instance[:fields].each do |field, value|
           %td
             = value
+        - model_instance[:associations].each do |assoc, ass_value|
+          -puts "assoc = #{assoc.inspect}, ass_value=#{ass_value}"
+          - ass_value.each do |av|
+            %td
+              -av.each do |av_key, av_value|
+                %ul
+                -av_value[:ids].each do |id|
+                  %li
+                    %a{:href => "/admin/#{av_value[:class_name].downcase}/show/#{id[:id]}"} #{id[:human_id]}
+                = "#{av_value[:count]}"
         %td
           %a.btn.btn-info.btn-mini{:type => "submit", :name => "show", :href => "/admin/#{model_instance[:model_name].downcase}/show/#{model_instance[:id]}"} Show
         %td
