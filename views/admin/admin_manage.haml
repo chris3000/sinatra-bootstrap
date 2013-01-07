@@ -60,7 +60,7 @@
                 -av_value[:ids].each do |id|
                   %li
                     %a{:href => "/admin/#{av_value[:class_name].downcase}/show/#{id[:id]}"} #{id[:human_id]}
-                = "#{av_value[:count]}"
+                %label.badge #{av_value[:count]}
         %td
           %a.btn.btn-info.btn-mini{:type => "submit", :name => "show", :href => "/admin/#{model_instance[:model_name].downcase}/show/#{model_instance[:id]}"} Show
         %td

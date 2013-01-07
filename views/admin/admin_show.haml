@@ -1,0 +1,82 @@
+/modal javascript
+:javascript
+  function launch_delete_confirm_modal(model_name, model_human_id, model_id,table_row){
+    $('#modal_body_confirm').html("Are you sure you want to delete "+model_name+" "+model_human_id+"?");
+    var row_index = table_row.parentNode.parentNode.rowIndex;
+    this.delete_info = {record_id:model_id,url:"/admin/"+model_name.toLowerCase()+"/delete",table_index:row_index};
+    //$('#delete_confirm_button').val();
+    $('#delete_modal').modal('toggle');
+  };
+
+  function post(path, parameters) {
+      var form = $('<form></form>');
+
+      form.attr("method", "post");
+      form.attr("action", path);
+
+      $.each(parameters, function(key, value) {
+          var field = $('<input></input>');
+
+          field.attr("type", "hidden");
+          field.attr("name", key);
+          field.attr("value", value);
+
+          form.append(field);
+      });
+
+      // The form needs to be a part of the document in
+      // order for us to be able to submit it.
+      $(document.body).append(form);
+      form.submit();
+  }
+
+  function delete_model_record(record_id, url,table_index){
+    $('#delete_modal').modal('toggle');
+
+  post(url, { id: record_id });
+   // $('#manage_table').deleteRow(0);
+  }
+
+#flash_error.alert.alert-error{:style => "display: none;"}
+#flash_info.alert.alert-info{:style => "display: none;"}
+.row
+  .span12
+    %h3
+      = "#{model[:model_name]} #{model[:human_id]}"
+    %dl.dl-horizontal
+      -model[:fields].each do |field_name, field_value|
+        %dt
+          = field_name.to_s
+        %dd
+          = ("#{field_value}" unless field_value.nil?) || "-empty-"
+    - model[:associations].each do |assoc, ass_value|
+      -puts "assoc = #{assoc.inspect}, ass_value=#{ass_value}"
+      - ass_value.each do |av|
+        -av.each do |av_key, av_value|
+          %div
+            %div{:style => "padding-top: 5px; padding-bottom: 5px;"}
+              %strong
+                #{av_key}
+              %span.badge #{av_value[:count]}
+            %select{:id => "#{av_key}_select"}
+              -av_value[:ids].each do |id|
+                %option{:value => "#{id[:id]}"} #{id[:human_id]}
+            %input.btn.btn-info.btn-mini{:type => "button", :value => "Show #{av_value[:class_name]}", :name => "show", :onclick => "console.log('click!');location.href= '/admin/#{av_value[:class_name].downcase}/show/'+$('##{av_key}_select').val();"}
+%a.btn.btn-primary.btn-mini{:type => "submit", :name => "edit", :href => "/admin/#{model[:model_name].downcase}/edit/#{model[:id]}"} Edit
+%a.btn.btn-danger.btn-mini{:type => "submit", :name => "delete", :onclick => "launch_delete_confirm_modal('#{model[:model_name].downcase}', '#{model[:human_id]}', '#{model[:id]}',this);"} Delete
+
+/ delete modal div
+.container
+  #delete_modal.modal.hide.fade{:tabindex => "-1", :role => "dialog", :"aria-labeledby" => "deleteModal", :"aria-hidden" => "true"}
+    .modal-header
+      %button.close{:type => "button", :"data-dismiss" => "modal", :"aria-hidden" => "true"} x
+      %h3#deleteModal Delete Confirm
+      .modal-body
+        %p
+          #modal_body_confirm
+            /this gets replaced with proper info with javascript
+            = "Are you sure you want to delete ...?"
+      .modal-footer
+        %button.btn{:"data-dismiss" => "modal", :"aria-hidden" => "true"} Cancel
+        /value will get set with record id when modal is activated
+        %button.btn-primary#delete_confirm_button{:type => "submit", :onclick => "delete_model_record(delete_info.record_id, delete_info.url, delete_info.table_index)"} Delete

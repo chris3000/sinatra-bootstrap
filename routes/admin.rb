@@ -16,12 +16,12 @@ class MyApp < Sinatra::Application
     Kernel.const_get(class_name.capitalize)
   end
 
-  get "admin/:model/show/:id" do
+  get "/admin/:model/show/:id/?" do
     model_class = get_model_class params['model']
-    model = model_class.scaffold_show
-    puts ""
-    haml :'admin/admin_show', :layout => :'admin/admin_layout', :locals =>{:model => model_instances,
-                                                                             :model_field_headings => model_field_headings}
+    model_instance = model_class.find(params[:id])
+    model = model_instance.scaffold_show
+    puts "show model - #{model.inspect}"
+    haml :'admin/admin_show', :layout => :'admin/admin_layout', :locals =>{:model => model}
   end
 
   get "/admin/:model/manage/?" do
@@ -70,7 +70,7 @@ class MyApp < Sinatra::Application
       else
        flash[:error] = msg
       end
-      redirect(request.referrer)
+      redirect("/admin/#{params['model']}/manage/")
     end
   end
 
