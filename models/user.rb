@@ -26,6 +26,7 @@ class User
   attr_protected        :password_hash
 
   has_many :authentications, :dependent => :delete
+  has_many :things, :dependent => :delete
   #belongs_to :something
   #has_and_belongs_to_many :something_else
   #validations

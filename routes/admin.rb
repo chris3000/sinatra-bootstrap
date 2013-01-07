@@ -2,7 +2,7 @@
 class MyApp < Sinatra::Application
   ['/admin', '/admin/*'].each do |path|
     before path do
-      @model_list = ["User","Authentication"]
+      @model_list = ["User","Authentication", "Thing"]
       session['db_list']=20
     end
   end

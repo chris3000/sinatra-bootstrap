@@ -2,14 +2,14 @@
 
 require_relative 'user'
 require_relative 'authentication'
-require_relative 'identity'
-
+require_relative 'thing'
 
 configure :development do
   puts "configuring development in model init"
-  user1 = User.new
-  user1.username = "test_user1"
-  user1.password = "passwd1"
+  user1 = User.find_or_create_by(username:"test_user1", password:"passwd1")
+  #user1 = User.new
+  #user1.username = "test_user1"
+  #user1.password = "passwd1"
   user1.accept_terms = true
   user1.email = "test1@user1.com"
   user1.save
@@ -41,4 +41,12 @@ configure :development do
   user2.authentications << auth2a
   user2.verified = true
   user2.save
+  puts "things count=#{user1.things.count}"
+  if user1.things.count == 0
+    thing1 = Thing.new
+    thing1.thing_name = "my_thing1"
+    thing1.something = "this is something..."
+    user1.things << thing1
+    user1.save
+  end
 end

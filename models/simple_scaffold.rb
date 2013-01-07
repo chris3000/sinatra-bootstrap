@@ -51,7 +51,7 @@ module SimpleScaffold
         value_obj = (name.to_sym if heading_titles)||({name.to_sym => {:class_name => class_name, :count => count, :ids => ids }})
         #puts ids.inspect
         if associations[macro]
-          associations[macro].merge!(value_obj)
+          associations[macro] << value_obj
         else
           associations[macro] = [value_obj]
         end

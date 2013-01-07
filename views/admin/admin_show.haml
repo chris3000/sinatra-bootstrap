@@ -59,11 +59,19 @@
                 #{av_key}
               %span.badge #{av_value[:count]}
             %select{:id => "#{av_key}_select"}
+              -if av_value[:count] == 0
+                %option{:value => ""} --none--
               -av_value[:ids].each do |id|
                 %option{:value => "#{id[:id]}"} #{id[:human_id]}
-            %input.btn.btn-info.btn-mini{:type => "button", :value => "Show #{av_value[:class_name]}", :name => "show", :onclick => "console.log('click!');location.href= '/admin/#{av_value[:class_name].downcase}/show/'+$('##{av_key}_select').val();"}
-%a.btn.btn-primary.btn-mini{:type => "submit", :name => "edit", :href => "/admin/#{model[:model_name].downcase}/edit/#{model[:id]}"} Edit
-%a.btn.btn-danger.btn-mini{:type => "submit", :name => "delete", :onclick => "launch_delete_confirm_modal('#{model[:model_name].downcase}', '#{model[:human_id]}', '#{model[:id]}',this);"} Delete
+            -if av_value[:count] > 0
+              %input.btn.btn-info.btn-mini{:type => "button", :value => "Show #{av_value[:class_name]}", :name => "show", :onclick => "console.log('click!');location.href= '/admin/#{av_value[:class_name].downcase}/show/'+$('##{av_key}_select').val();"}
+%br
+%a.btn.btn-primary.btn-mini{:type => "submit", :name => "edit", :href => "/admin/#{model[:model_name].downcase}/edit/#{model[:id]}"}
+  %i.icon-edit.icon-white
+  Edit #{model[:human_id]}
+%a.btn.btn-danger.btn-mini{:type => "submit", :name => "delete", :onclick => "launch_delete_confirm_modal('#{model[:model_name].downcase}', '#{model[:human_id]}', '#{model[:id]}',this);"}
+  %i.icon-remove.icon-white
+  Delete #{model[:human_id]}
 
 / delete modal div
 .container

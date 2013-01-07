@@ -1,3 +1,6 @@
+:css
+  table { margin: auto; }
+  td, th { text-align: center; }
 /modal javascript
 :javascript
   function launch_delete_confirm_modal(model_name, model_human_id, model_id,table_row){
@@ -35,38 +38,44 @@
   %thead
     %tr
       -model_field_headings[:fields].each do |field, value|
-        %th{:id => "#{field}"}
+        %th{:id => "#{field}", :style => "text-align: center;"}
           = field
       -model_field_headings[:associations].each do |assoc, ass_value|
         - ass_value.each do |av|
           - assoc_name = "#{assoc} #{av}"
-          %th
+          %th{:style => "text-align: center;"}
             = assoc_name
-      %th Show
-      %th Edit
-      %th Delete
+      %th{:style => "text-align: center;"} Show
+      %th{:style => "text-align: center;"} Edit
+      %th{:style => "text-align: center;"} Delete
   %tbody
     -model_instances.each do |model_instance|
       %tr{:id => "#{model_instance[:id]}"}
         - model_instance[:fields].each do |field, value|
-          %td
+          %td{:style => "text-align: center;"}
             = value
         - model_instance[:associations].each do |assoc, ass_value|
           -puts "assoc = #{assoc.inspect}, ass_value=#{ass_value}"
           - ass_value.each do |av|
-            %td
+            %td{:style => "text-align: center;"}
               -av.each do |av_key, av_value|
                 %ul
                 -av_value[:ids].each do |id|
                   %li
                     %a{:href => "/admin/#{av_value[:class_name].downcase}/show/#{id[:id]}"} #{id[:human_id]}
                 %label.badge #{av_value[:count]}
-        %td
-          %a.btn.btn-info.btn-mini{:type => "submit", :name => "show", :href => "/admin/#{model_instance[:model_name].downcase}/show/#{model_instance[:id]}"} Show
-        %td
-          %a.btn.btn-primary.btn-mini{:type => "submit", :name => "edit", :href => "/admin/#{model_instance[:model_name].downcase}/edit/#{model_instance[:id]}"} Edit
-        %td
-          %a.btn.btn-danger.btn-mini{:type => "submit", :name => "delete", :onclick => "launch_delete_confirm_modal('#{model_instance[:model_name].downcase}', '#{model_instance[:human_id]}', '#{model_instance[:id]}',this);"} Delete
+        %td{:style => "text-align: center;"}
+          %a.btn.btn-info.btn-mini{:type => "submit", :name => "show", :href => "/admin/#{model_instance[:model_name].downcase}/show/#{model_instance[:id]}"}
+            %i.icon-circle-arrow-up.icon-white
+            Show
+        %td{:style => "text-align: center;"}
+          %a.btn.btn-primary.btn-mini{:type => "submit", :name => "edit", :href => "/admin/#{model_instance[:model_name].downcase}/edit/#{model_instance[:id]}"}
+            %i.icon-edit.icon-white
+            Edit
+        %td{:style => "text-align: center;"}
+          %a.btn.btn-danger.btn-mini{:type => "submit", :name => "delete", :onclick => "launch_delete_confirm_modal('#{model_instance[:model_name].downcase}', '#{model_instance[:human_id]}', '#{model_instance[:id]}',this);"}
+            %i.icon-remove.icon-white
+            Delete
 / delete modal div
 .container
   #delete_modal.modal.hide.fade{:tabindex => "-1", :role => "dialog", :"aria-labeledby" => "deleteModal", :"aria-hidden" => "true"}
