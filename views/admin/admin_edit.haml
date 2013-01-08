@@ -16,9 +16,9 @@
             = field_name.to_s
           .controls
             - if field_value[:type] == String
-              -if !field_value[:value].nil? && field_value[:value].downcase =~ /password/
+              -if field_name.to_s.downcase =~ /password/
                 %input{:type => "password", :id => "#{field_name.to_s}", :value =>"#{field_value[:value]}"}
-              -elsif !field_value[:value].nil? && field_value[:value].downcase =~ /email/
+              -elsif field_name.to_s.downcase =~ /email/
                 %input{:type => "email", :id => "#{field_name.to_s}", :value =>"#{field_value[:value]}"}
               -else
                 %input{:type => "text", :id => "#{field_name.to_s}", :value =>"#{field_value[:value]}"}

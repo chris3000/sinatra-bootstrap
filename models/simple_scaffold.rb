@@ -111,7 +111,7 @@ module SimpleScaffold
     add_fields.each do |field|
       unless ignore_fields.include? field[:field]
         field_type = (field[:type]) || String
-        field_value = ("HEADING" if heading_titles) || ("")
+        field_value = ("HEADING" if heading_titles) || nil
         fields[field[:field]] = {:value => field_value, :type => field_type}
       end
     end
