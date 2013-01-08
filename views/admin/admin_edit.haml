@@ -1,16 +1,34 @@
+:javascript
+  fieldsSubmit = {};
+  function addToFieldsSubmit(){
 
+  }
 #flash_error.alert.alert-error{:style => "display: none;"}
 #flash_info.alert.alert-info{:style => "display: none;"}
-.row
-  .span12
-    %h3
-      = "#{model[:model_name]} #{model[:human_id]}"
-    %dl.dl-horizontal
+.well.well-small
+  %h3
+    = "Edit #{model[:model_name]} #{model[:human_id]}"
+  %form.form-horizontal
+    %fieldset
       -model[:fields].each do |field_name, field_value|
-        %dt
-          = field_name.to_s
-        %dd
-          = ("#{field_value}" unless field_value.nil?) || "-empty-"
+        .control-group
+          %label.control-label{:for => "#{field_name.to_s}"}
+            = field_name.to_s
+          .controls
+            - if field_value[:type] == String
+              -if !field_value[:value].nil? && field_value[:value].downcase =~ /password/
+                %input{:type => "password", :id => "#{field_name.to_s}", :value =>"#{field_value[:value]}"}
+              -elsif !field_value[:value].nil? && field_value[:value].downcase =~ /email/
+                %input{:type => "email", :id => "#{field_name.to_s}", :value =>"#{field_value[:value]}"}
+              -else
+                %input{:type => "text", :id => "#{field_name.to_s}", :value =>"#{field_value[:value]}"}
+            - elsif field_value[:type] == Boolean
+              %input{:type => "checkbox", :id => "#{field_name.to_s}", :checked => "#{field_value[:value]}", :value =>"#{field_name.to_s}"}
+            - elsif field_value[:type] == Date || field_value[:type] == Time || field_value[:type] == DateTime
+              %input{:type => "date", :id => "#{field_name.to_s}", :value =>"#{field_value[:value]}"}
+            - elsif field_value[:type] == Integer || field_value[:type] == Float
+              %input{:type => "number", :id => "#{field_name.to_s}", :value =>"#{field_value[:value]}"}
+
     - model[:associations].each do |assoc, ass_value|
       -puts "assoc = #{assoc.inspect}, ass_value=#{ass_value}"
       - ass_value.each do |av|

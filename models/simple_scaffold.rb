@@ -2,6 +2,14 @@ module SimpleScaffold
 
   def self.included(base)
     base.extend(ClassMethods)
+    @manage_ignore_fields = {} unless @manage_ignore_fields
+    @new_ignore_fields = {} unless @new_ignore_fields
+    @show_ignore_fields = {} unless @show_ignore_fields
+    @edit_ignore_fields = {} unless @edit_ignore_fields
+    @manage_add_fields = {} unless @manage_add_fields
+    @new_add_fields = {} unless @new_add_fields
+    @show_add_fields = {} unless @show_add_fields
+    @edit_add_fields = {} unless @edit_add_fields
   end
 
   #something that ID's the model to a human
@@ -15,6 +23,10 @@ module SimpleScaffold
 
   def scaffold_show
     SimpleScaffold.scaffold :show, self
+  end
+
+  def scaffold_edit
+    SimpleScaffold.scaffold :edit, self
   end
 
   def scaffold_manage_headings
@@ -61,15 +73,29 @@ module SimpleScaffold
     associations
   end
 
+  def self.get_added_fields scaffold_type, parent_name
+    add_fields = @manage_add_fields[parent_name] if scaffold_type == :manage
+    add_fields = @edit_add_fields[parent_name] if scaffold_type == :edit
+    add_fields = @new_add_fields[parent_name] if scaffold_type == :new
+    add_fields = @show_add_fields[parent_name] if scaffold_type == :show
+    add_fields = [] if add_fields.nil?
+    add_fields
+  end
+
+  def self.get_ignored_fields scaffold_type, parent_name
+    ignore_fields = @manage_ignore_fields[parent_name] if scaffold_type == :manage
+    ignore_fields = @edit_ignore_fields[parent_name] if scaffold_type == :edit
+    ignore_fields = @new_ignore_fields[parent_name] if scaffold_type == :new
+    ignore_fields = @show_ignore_fields[parent_name] if scaffold_type == :show
+    ignore_fields = [] if ignore_fields.nil?
+    ignore_fields
+  end
+
   def self.scaffold scaffold_type, parent, heading=:none
     p_name = ("#{parent.name}" if parent.is_a? Class) || "#{parent.class.name}"
     heading_titles = (heading == :headings) || (parent.is_a? Class)
-    ignore_fields = []
-    ignore_fields = @manage_ignore_fields[p_name] if scaffold_type == :manage
-    ignore_fields = @update_ignore_fields if scaffold_type == :update
-    ignore_fields = @new_ignore_fields if scaffold_type == :new
-    ignore_fields = @show_ignore_fields if scaffold_type == :show
-    ignore_fields = [] if ignore_fields.nil?
+    ignore_fields = get_ignored_fields scaffold_type, p_name
+    add_fields = get_added_fields scaffold_type, p_name
     sc = {:heading_titles => heading_titles, :model_name => p_name}
     sc[:human_id] = ("HEADINGS" if heading_titles) || (parent.human_id || parent._id)
     sc[:id] = ("HEADINGS" if heading_titles) || parent._id
@@ -82,30 +108,50 @@ module SimpleScaffold
         fields[field_obj.name] = {:value => field_value, :type => field_type}
       end
     end
+    add_fields.each do |field|
+      unless ignore_fields.include? field[:field]
+        field_type = (field[:type]) || String
+        field_value = ("HEADING" if heading_titles) || ("")
+        fields[field[:field]] = {:value => field_value, :type => field_type}
+      end
+    end
     sc[:fields] = fields
     sc[:associations] = get_associations parent, @manage_ignore_fields, heading_titles
     sc
   end
 
   def self.manage_ignore parent, these_fields
-    @manage_ignore_fields = {} unless @manage_ignore_fields
     @manage_ignore_fields.merge!({"#{parent.name}" => these_fields })
   end
 
   def self.new_ignore parent, these_fields
-    @new_ignore_fields = {} unless @new_ignore_fields
     @new_ignore_fields.merge!({"#{parent.name}" => these_fields })
   end
 
-  def self.update_ignore parent, these_fields
-    @update_ignore_fields = {} unless @update_ignore_fields
-    @update_ignore_fields.merge!({"#{parent.name}" => these_fields })
+  def self.edit_ignore parent, these_fields
+    @edit_ignore_fields.merge!({"#{parent.name}" => these_fields })
   end
 
   def self.show_ignore parent, these_fields
-    @show_ignore_fields = {} unless @show_ignore_fields
     @show_ignore_fields.merge!({"#{parent.name}" => these_fields })
   end
+
+  def self.manage_add parent, these_fields
+    @manage_add_fields.merge!({"#{parent.name}" => these_fields })
+  end
+
+  def self.new_add parent, these_fields
+    @new_add_fields.merge!({"#{parent.name}" => these_fields })
+  end
+
+  def self.edit_add parent, these_fields
+    @edit_add_fields.merge!({"#{parent.name}" => these_fields })
+  end
+
+  def self.show_add parent, these_fields
+    @show_add_fields.merge!({"#{parent.name}" => these_fields })
+  end
+
   module ClassMethods
     def scaffold_manage_headings
       SimpleScaffold.scaffold :manage, self, :headings

@@ -24,6 +24,14 @@ class MyApp < Sinatra::Application
     haml :'admin/admin_show', :layout => :'admin/admin_layout', :locals =>{:model => model}
   end
 
+  get "/admin/:model/edit/:id/?" do
+    model_class = get_model_class params['model']
+    model_instance = model_class.find(params[:id])
+    model = model_instance.scaffold_edit
+    puts "edit model - #{model.inspect}"
+    haml :'admin/admin_edit', :layout => :'admin/admin_layout', :locals =>{:model => model}
+  end
+
   get "/admin/:model/manage/?" do
     model_class = get_model_class params['model']
     if model_class.singleton_methods.include? :scaffold_manage_headings

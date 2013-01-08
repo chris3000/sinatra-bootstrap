@@ -23,7 +23,8 @@ class Thing
 
   #------ scaffold   -------#
   #scaffold stuff
-  SimpleScaffold.manage_ignore self, ["_id","_type", "created_at", "updated_at"]
+  SimpleScaffold.manage_ignore self, ["_id","_type", "created_at", "updated_at", "user_id"]
+  SimpleScaffold.edit_ignore self, ["_id","_type", "created_at", "updated_at", "user_id"]
 
   def human_id
     thing_name
