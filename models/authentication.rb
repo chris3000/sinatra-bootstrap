@@ -6,7 +6,7 @@ class Authentication
 
   field :provider, :type => String
   field :uid, :type => String
-  field :nickname
+  field :nickname, :type => String
 
   belongs_to :user
 

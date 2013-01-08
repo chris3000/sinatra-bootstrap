@@ -1,16 +1,10 @@
 require 'mongoid'
 require_relative('../models/user')
 require_relative('../models/authentication')
+require_relative('../models/thing')
 #configure Mongoid
 Mongoid.load!(::File.expand_path("../conf/mongoid.yml", File.dirname(__FILE__)), "development")
 
-user_associations =  User.reflect_on_all_associations(:has_many)
-uac = {}
-u_ass_clean = user_associations.each do |u_ass|
- # uac << { :macro => u_ass.macro }
-
-end
-#puts Authentication.reflect_on_all_associations(:belongs_to).inspect
 test1 = User.find_by_username("test_user1")
 #puts "human id= #{test1.human_id}"
 test1_man_scaff = test1.scaffold_manage
@@ -19,6 +13,8 @@ auth1 = Authentication.find(test1_man_scaff[:associations][:has_many][0][:authen
 puts auth1.scaffold_manage.inspect
 puts User.scaffold_manage_headings.inspect
 puts Authentication.scaffold_manage_headings.inspect
+thing1 =Thing.find(test1_man_scaff[:associations][:has_many][1][:things][:ids][0][:id])
+puts thing1.scaffold_manage.inspect
 #User.setfoo
 #puts test1.instance_foo.inspect
 =begin

@@ -53,7 +53,7 @@
       %tr{:id => "#{model_instance[:id]}"}
         - model_instance[:fields].each do |field, value|
           %td{:style => "text-align: center;"}
-            = value
+            = value[:value]
         - model_instance[:associations].each do |assoc, ass_value|
           -puts "assoc = #{assoc.inspect}, ass_value=#{ass_value}"
           - ass_value.each do |av|

@@ -35,6 +35,7 @@ module SimpleScaffold
         class_name = ass_object.class_name
         it_has_many = (macro == :has_many || macro == :has_and_belongs_to_many || macro == :embeds_many)
         if it_has_many && !heading_titles
+          puts "name = #{name}, parent = #{parent} "
           count = parent.send("#{name}").count
         else
           count = 1
@@ -76,7 +77,9 @@ module SimpleScaffold
     parent.fields.each do |field|
       field_obj = field[1]
       unless ignore_fields.include? field_obj.name
-        fields[field_obj.name] = (field_obj.type if heading_titles) || (parent.send field_obj.name)
+        field_type = field_obj.type
+        field_value = ("HEADING" if heading_titles) || (parent.send field_obj.name)
+        fields[field_obj.name] = {:value => field_value, :type => field_type}
       end
     end
     sc[:fields] = fields
