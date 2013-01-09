@@ -15,31 +15,10 @@ puts User.scaffold_manage_headings.inspect
 puts Authentication.scaffold_manage_headings.inspect
 thing1 =Thing.find(test1_man_scaff[:associations][:has_many][1][:things][:ids][0][:id])
 puts thing1.scaffold_manage.inspect
-#User.setfoo
-#puts test1.instance_foo.inspect
-=begin
-  all_associations = [:has_many, :has_one, :belongs_to, :embeds_many, :embeds_one, :embedded_in, :has_and_belongs_to_many]
-  ass_obj_array = []
-  all_associations.each do |ass|
-    User.reflect_on_all_associations(ass).each {|rr| ass_obj_array << rr}
-  end
-  associations = {}
-  ass_obj_array.each do |ass_object|
-    macro = ass_object.macro
-    name = ass_object.name
-    class_name = ass_object.class_name
-    ids = test1.send "#{class_name.downcase}_ids"
-    value_obj = {name.to_sym => {:class_name => class_name, :ids => ids }}
-    #puts ids.inspect
-    if associations[ass_object.macro]
-      associations[ass_object.macro].merge!(value_obj)
-    else
-      associations[ass_object.macro] = value_obj
-    end
-  end
-  puts associations.inspect
-=end
- User.fields.each do |field|
+puts Authentication.scaffold_list_items.inspect
+puts Authentication.scaffold_association_classes.inspect
+puts User.scaffold_association_classes.inspect
+User.fields.each do |field|
    #puts field[0]
    field_obj = field[1]
    #puts field_obj.name

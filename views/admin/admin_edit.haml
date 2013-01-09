@@ -1,4 +1,7 @@
+%link{:href => "/js/select2-3.2/select2.css", :rel => "stylesheet"}
+%script{:src => "/js/select2-3.2/select2.min.js"}
 :javascript
+
   fieldsSubmit = {};
   function addToFieldsSubmit(field_id, field_value){
       fieldsSubmit[field_id] = field_value;
@@ -30,6 +33,10 @@
       $(document.body).append(form);
       form.submit();
   }
+
+  function bindSelect2(){
+
+  }
 #flash_error.alert.alert-error{:style => "display: none;"}
 #flash_info.alert.alert-info{:style => "display: none;"}
 .well.well-small
@@ -55,7 +62,7 @@
               %input{:type => "date", :id => "#{field_name.to_s}", :value =>"#{field_value[:value]}", :onchange => "addToFieldsSubmit(this.id, this.value);"}
             - elsif field_value[:type] == Integer || field_value[:type] == Float
               %input{:type => "number", :id => "#{field_name.to_s}", :value =>"#{field_value[:value]}", :onchange => "addToFieldsSubmit(this.id, this.value);"}
-
+    - puts "#{association_lists.inspect}"
     - model[:associations].each do |assoc, ass_value|
       -puts "assoc = #{assoc.inspect}, ass_value=#{ass_value}"
       - ass_value.each do |av|
@@ -65,29 +72,15 @@
               %strong
                 #{av_key}
               %span.badge #{av_value[:count]}
-            %select{:id => "#{av_key}_select"}
-              -if av_value[:count] == 0
-                %option{:value => ""} --none--
+            - mult = "multiple" if assoc.to_s =~ /many/
+            %select{:id => "#{av_value[:class_name].downcase}_select", :multiple => mult, :style => "width:300px;"}
               -av_value[:ids].each do |id|
-                %option{:value => "#{id[:id]}"} #{id[:human_id]}
-            -if av_value[:count] > 0
-              %input.btn.btn-info.btn-mini{:type => "button", :value => "Show #{av_value[:class_name]}", :name => "show", :onclick => "console.log('click!');location.href= '/admin/#{av_value[:class_name].downcase}/show/'+$('##{av_key}_select').val();"}
+                %option{:value => "#{id[:id]}", :selected=>"selected"} #{id[:human_id]}
   %button.btn-primary{:type => "submit", :name => "save", :onclick => "saveChanges('/admin/#{model[:model_name].downcase}/update/#{model[:id]}');"}
     %i.icon-ok.icon-white
     Save #{model[:human_id]}
+:javascript
+  $('select').each(function(){
+    $(this).select2();
+  });
 
-/ delete modal div
-.container
-  #delete_modal.modal.hide.fade{:tabindex => "-1", :role => "dialog", :"aria-labeledby" => "deleteModal", :"aria-hidden" => "true"}
-    .modal-header
-      %button.close{:type => "button", :"data-dismiss" => "modal", :"aria-hidden" => "true"} x
-      %h3#deleteModal Delete Confirm
-      .modal-body
-        %p
-          #modal_body_confirm
-            /this gets replaced with proper info with javascript
-            = "Are you sure you want to delete ...?"
-      .modal-footer
-        %button.btn{:"data-dismiss" => "modal", :"aria-hidden" => "true"} Cancel
-        /value will get set with record id when modal is activated
-        %button.btn-primary#delete_confirm_button{:type => "submit", :onclick => "delete_model_record(delete_info.record_id, delete_info.url, delete_info.table_index)"} Delete

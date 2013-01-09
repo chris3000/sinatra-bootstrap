@@ -12,6 +12,10 @@ module SimpleScaffold
     @edit_add_fields = {} unless @edit_add_fields
   end
 
+  def list_item
+    {:id => id, :human_id => human_id}
+  end
+
   #something that ID's the model to a human
   def human_id
     SimpleScaffold.human_id
@@ -33,6 +37,19 @@ module SimpleScaffold
     SimpleScaffold.scaffold :manage, self, :headings
   end
 
+  def self.association_classes parent
+    all_associations = [:has_many, :has_one, :belongs_to, :embeds_many, :embeds_one, :embedded_in, :has_and_belongs_to_many]
+    ass_obj_array = []
+    all_associations.each do |ass|
+      parent.reflect_on_all_associations(ass).each {|rr| ass_obj_array << rr}
+    end
+    associations = []
+    ass_obj_array.each do |ass_object|
+      associations << ass_object.class_name
+    end
+    associations
+  end
+
   def self.get_associations parent, ignore_fields=[], heading_titles
     all_associations = [:has_many, :has_one, :belongs_to, :embeds_many, :embeds_one, :embedded_in, :has_and_belongs_to_many]
     ass_obj_array = []
@@ -47,7 +64,7 @@ module SimpleScaffold
         class_name = ass_object.class_name
         it_has_many = (macro == :has_many || macro == :has_and_belongs_to_many || macro == :embeds_many)
         if it_has_many && !heading_titles
-          puts "name = #{name}, parent = #{parent} "
+         # puts "name = #{name}, parent = #{parent} "
           count = parent.send("#{name}").count
         else
           count = 1
@@ -155,6 +172,18 @@ module SimpleScaffold
   module ClassMethods
     def scaffold_manage_headings
       SimpleScaffold.scaffold :manage, self, :headings
+    end
+
+    def scaffold_association_classes
+       SimpleScaffold.association_classes self
+    end
+
+    def scaffold_list_items
+      items = []
+      self.each do |item|
+        items << item.list_item
+      end
+      {:class_name => self.name, :count => items.length, :ids => items}
     end
   end
 end

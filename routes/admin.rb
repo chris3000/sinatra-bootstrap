@@ -26,10 +26,17 @@ class MyApp < Sinatra::Application
 
   get "/admin/:model/edit/:id/?" do
     model_class = get_model_class params['model']
+    assoc_classes = model_class.scaffold_association_classes
+    assoc_lists = {}
+    assoc_classes.each do |ass_class_str|
+      ass_class = get_model_class ass_class_str
+      list_items = ass_class.scaffold_list_items
+      assoc_lists[list_items[:class_name].to_s.downcase.to_sym] = list_items
+    end
     model_instance = model_class.find(params[:id])
     model = model_instance.scaffold_edit
     puts "edit model - #{model.inspect}"
-    haml :'admin/admin_edit', :layout => :'admin/admin_layout', :locals =>{:model => model}
+    haml :'admin/admin_edit', :layout => :'admin/admin_layout', :locals =>{:model => model, :association_lists => assoc_lists}
   end
 
   get "/admin/:model/manage/?" do
