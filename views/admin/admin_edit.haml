@@ -10,10 +10,27 @@
 
   function saveChanges(url){
     submit = {fields:fieldsSubmit, associations:associationsSubmit};
-    post(url,submit);
+    $.ajax(url, {
+        data : submit,
+        dataType : 'json',
+        type : 'POST'
+        }).done(function (data, textStatus, jqXHR){
+          console.log("success- "+JSON.stringify(data));
+          console.log("success- "+textStatus);
+          console.log("success- "+JSON.stringify(jqXHR));
+          if (data.status == "failure") {
+            handle_failure (data)
+          } else {
+             window.location = "/admin/#{model[:model_name].downcase}/show/#{model[:id]}";
+          }
+        }).fail(function (jqXHR, textStatus, errorThrown){
+           console.log("fail- "+errorThrown);
+           console.log("fail- "+textStatus);
+           console.log("fail- "+JSON.stringify(jqXHR));
+        });
   }
 
-  function post(path, parameters) {
+  function postJSON(path, parameters) {
       var form = $('<form></form>');
 
       form.attr("method", "post");
@@ -42,6 +59,7 @@
     = "Edit #{model[:model_name]} #{model[:human_id]}"
   %form.form-horizontal
     %fieldset
+      -puts model[:fields].inspect
       -model[:fields].each do |field_name, field_value|
         .control-group
           %label.control-label{:for => "#{field_name.to_s}"}
@@ -55,11 +73,11 @@
               -else
                 %input{:type => "text", :id => "#{field_name.to_s}", :value =>"#{field_value[:value]}", :onchange => "addToFieldsSubmit(this.id, this.value);"}
             - elsif field_value[:type] == Boolean
-              %input{:type => "checkbox", :id => "#{field_name.to_s}", :checked => "#{field_value[:value]}", :value =>"#{field_name.to_s}", :onchange => "addToFieldsSubmit(this.id, this.checked);"}
+              %input{:type => "checkbox", :id => "#{field_name.to_s}", :checked => field_value[:value], :value =>"#{field_name.to_s}", :onchange => "addToFieldsSubmit(this.id, this.checked);"}
             - elsif field_value[:type] == Date || field_value[:type] == Time || field_value[:type] == DateTime
               %input{:type => "date", :id => "#{field_name.to_s}", :value =>"#{field_value[:value]}", :onchange => "addToFieldsSubmit(this.id, this.value);"}
             - elsif field_value[:type] == Integer || field_value[:type] == Float
-              %input{:type => "number", :id => "#{field_name.to_s}", :value =>"#{field_value[:value]}", :onchange => "addToFieldsSubmit(this.id, this.value);"}
+              %input{:type => "number", :id => "#{field_name.to_s}", :value =>field_value[:value], :onchange => "addToFieldsSubmit(this.id, this.value);"}
     - puts "#{association_lists.to_json}"
     - model[:associations].each do |assoc, ass_value|
       -puts "assoc = #{assoc.inspect}, ass_value=#{ass_value}"

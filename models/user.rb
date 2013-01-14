@@ -24,7 +24,7 @@ class User
 
   attr_accessor         :password, :password_confirmation
   attr_protected        :password_hash
-
+  attr_readonly         :username
   has_many :authentications, :dependent => :delete
   has_many :things, :dependent => :delete
   #belongs_to :something
@@ -53,11 +53,11 @@ class User
                           :accept => true,
                           :message => "Terms and Conditions Must Be Accepted."
   validates_length_of :password,
-                      :on => :create,
+                      :if => :password_changed?,
                       :minimum => 7,
                       :message => "Password must be at least 7 characters."
   validates_confirmation_of :password,
-                            :on => :create,
+                           :if => :password_changed?,
                             :message => "Password confirmation must match given password."
 
   #scaffold stuff
@@ -65,8 +65,13 @@ class User
   SimpleScaffold.edit_ignore self, ["password_digest", "_id","_type", "created_at", "updated_at"]
   SimpleScaffold.edit_add self, [{:field=>"password", :type => String}, {:field=>"password_confirmation", :type => String}]
   SimpleScaffold.new_add self, [{:field=>"password", :type => String}, {:field=>"password_confirmation", :type => String}]
+
   def human_id
     username
+  end
+
+  def password_changed?
+    !@password.blank?
   end
 
 =begin
@@ -90,10 +95,11 @@ class User
    # helper methods
    # Encrypts the password into the password_digest attribute.
   def password=(unencrypted_password)
-    @password = unencrypted_password
-    unless unencrypted_password.empty?
-      self.password_digest = Password.create(unencrypted_password)
+    if !(unencrypted_password.is_a? String) || unencrypted_password.empty? || unencrypted_password.nil?
+      unencrypted_password = "a"
     end
+    @password = unencrypted_password
+    self.password_digest = Password.create(unencrypted_password)
   end
 
   def verified?

@@ -24,6 +24,27 @@ class MyApp < Sinatra::Application
     haml :'admin/admin_show', :layout => :'admin/admin_layout', :locals =>{:model => model}
   end
 
+  post "/admin/:model/update/:id/?" do
+    xhr_response = {:action => "update"}
+    model_class = get_model_class params['model']
+    model_instance = model_class.find(params[:id])
+    fields = params[:fields]
+    associations = params[:associations]
+    model_instance.update_attributes fields
+    if model_instance.errors.any?
+      puts "there were errors! #{model_instance.errors.inspect}"
+      status 400
+      xhr_response[:status] = "failure"
+      xhr_response[:msg] = "Update of #{params[:id]} failed."
+      xhr_response[:errors] = model_instance.errors.messages.to_json
+    else
+      xhr_response[:status] = "success"
+      xhr_response[:msg] = "Update of #{params[:id]} successful."
+    end
+    puts params.inspect
+    json xhr_response
+  end
+
   get "/admin/:model/edit/:id/?" do
     model_class = get_model_class params['model']
     assoc_classes = model_class.scaffold_association_classes
@@ -63,8 +84,7 @@ class MyApp < Sinatra::Application
   post "/admin/:model/delete/?" do
     xhr_response = {:action => "delete"}
     begin
-      model_classname = params['model'].capitalize
-      model_class = Kernel.const_get(model_classname)
+      model_class = get_model_class params['model']
       model = model_class.find(params['id'])
       model.delete
       msg = "Delete of #{params['id']} successful."
