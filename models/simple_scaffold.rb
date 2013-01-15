@@ -82,7 +82,7 @@ module SimpleScaffold
             end
           end
         end
-        value_obj = (name.to_sym if heading_titles)||({name.to_sym => {:class_name => class_name, :count => count, :ids => ids }})
+        value_obj = ({name.to_sym => {:class_name => class_name, :count => 0, :ids => ids }} if heading_titles)||({name.to_sym => {:class_name => class_name, :count => count, :ids => ids }})
         #puts ids.inspect
         if associations[macro]
           associations[macro] << value_obj
@@ -176,6 +176,10 @@ module SimpleScaffold
   module ClassMethods
     def scaffold_manage_headings
       SimpleScaffold.scaffold :manage, self, :headings
+    end
+
+    def scaffold_new_headings
+      SimpleScaffold.scaffold :new, self, :headings
     end
 
     def scaffold_association_classes

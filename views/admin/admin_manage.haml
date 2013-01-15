@@ -12,6 +12,7 @@
   };
 
   function delete_model_record_success(data){
+    $(".alert").alert();
     console.log (data);
     var flash = null;
      if (data.status == "success"){
@@ -34,6 +35,12 @@
   }
 #flash_error.alert.alert-error{:style => "display: none;"}
 #flash_info.alert.alert-info{:style => "display: none;"}
+%h3
+  = "#{model_field_headings[:model_name]} Overview"
+#button_new{:style => "padding-bottom: 5px;"}
+  %a.btn.btn-success{:type => "submit", :name => "new", :href => "/admin/#{model_field_headings[:model_name].downcase}/new"}
+    %i.icon-pencil.icon-white
+    = "New #{model_field_headings[:model_name]}"
 %table.table.table-striped.table-bordered.table-hover.table-condensed#manage_table
   %thead
     %tr
@@ -42,7 +49,7 @@
           = field
       -model_field_headings[:associations].each do |assoc, ass_value|
         - ass_value.each do |av|
-          - assoc_name = "#{assoc} #{av}"
+          - assoc_name = "#{assoc} #{av.keys[0]}"
           %th{:style => "text-align: center;"}
             = assoc_name
       %th{:style => "text-align: center;"} Show

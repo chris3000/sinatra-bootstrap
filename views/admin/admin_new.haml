@@ -34,7 +34,7 @@
           if (data.status == "failure") {
             handleFailure(data);
           } else {
-             window.location = "/admin/#{model[:model_name].downcase}/show/#{model[:id]}";
+             window.location = "/admin/#{model[:model_name].downcase}/show/"+data.id;
           }
         }).fail(function (jqXHR, textStatus, errorThrown){
            console.log("fail- "+errorThrown);
@@ -68,11 +68,10 @@
 #flash_error.alert.alert-error.alert-block{:style => "display: none;"}
   %a.close{:href=>"#", :"data-dismiss"=> "alert"} &times;
   #flash_error_content
-    hello!
 #flash_info.alert.alert-info{:style => "display: none;"}
 .well.well-small
   %h3
-    = "Edit #{model[:model_name]} #{model[:human_id]}"
+    = "New #{model[:model_name]}"
   %form.form-horizontal
     %fieldset
       -puts model[:fields].inspect
@@ -83,17 +82,17 @@
           .controls
             - if field_value[:type] == String
               -if field_name.to_s.downcase =~ /password/
-                %input{:type => "password", :id => "#{field_name.to_s}", :value =>"#{field_value[:value]}", :onchange => "addToFieldsSubmit(this.id, this.value);"}
+                %input{:type => "password", :id => "#{field_name.to_s}", :onchange => "addToFieldsSubmit(this.id, this.value);"}
               -elsif field_name.to_s.downcase =~ /email/
-                %input{:type => "email", :id => "#{field_name.to_s}", :value =>"#{field_value[:value]}", :onchange => "addToFieldsSubmit(this.id, this.value);"}
+                %input{:type => "email", :id => "#{field_name.to_s}", :onchange => "addToFieldsSubmit(this.id, this.value);"}
               -else
-                %input{:type => "text", :id => "#{field_name.to_s}", :value =>"#{field_value[:value]}", :onchange => "addToFieldsSubmit(this.id, this.value);"}
+                %input{:type => "text", :id => "#{field_name.to_s}", :onchange => "addToFieldsSubmit(this.id, this.value);"}
             - elsif field_value[:type] == Boolean
-              %input{:type => "checkbox", :id => "#{field_name.to_s}", :checked => field_value[:value], :value =>"#{field_name.to_s}", :onchange => "addToFieldsSubmit(this.id, this.checked);"}
+              %input{:type => "checkbox", :id => "#{field_name.to_s}", :value =>"#{field_name.to_s}", :onchange => "addToFieldsSubmit(this.id, this.checked);"}
             - elsif field_value[:type] == Date || field_value[:type] == Time || field_value[:type] == DateTime
-              %input{:type => "date", :id => "#{field_name.to_s}", :value =>"#{field_value[:value]}", :onchange => "addToFieldsSubmit(this.id, this.value);"}
+              %input{:type => "date", :id => "#{field_name.to_s}", :onchange => "addToFieldsSubmit(this.id, this.value);"}
             - elsif field_value[:type] == Integer || field_value[:type] == Float
-              %input{:type => "number", :id => "#{field_name.to_s}", :value =>field_value[:value], :onchange => "addToFieldsSubmit(this.id, this.value);"}
+              %input{:type => "number", :id => "#{field_name.to_s}", :onchange => "addToFieldsSubmit(this.id, this.value);"}
     - puts "#{association_lists.to_json}"
     - model[:associations].each do |assoc, ass_value|
       -puts "assoc = #{assoc.inspect}, ass_value=#{ass_value}"
@@ -103,21 +102,15 @@
             %div{:style => "padding-top: 5px; padding-bottom: 5px;"}
               %strong
                 #{av_key}
-              %span.badge #{av_value[:count]}
             - mult = "multiple" if assoc.to_s =~ /many/
             %select{:id => "#{av_key}", :multiple => mult, :style => "width:400px;"}
-              -id_ignore = []
               -if mult.nil?
-                %option{:value => "--none--"} --none--
-              -av_value[:ids].each do |id|
-                - id_ignore << id[:id]
-                %option{:value => "#{id[:id]}", :selected=>true} #{id[:human_id]}
+                %option{:value => "--none--", :selected => true} --none--
               -association_lists[av_value[:class_name].downcase.to_sym][:ids].each do |id|
-                -unless id_ignore.include? id[:id]
-                  %option{:value => "#{id[:id]}"} #{id[:human_id]}
-  %button.btn-primary{:type => "submit", :name => "save", :onclick => "saveChanges('/admin/#{model[:model_name].downcase}/update/#{model[:id]}');"}
+                %option{:value => "#{id[:id]}"} #{id[:human_id]}
+  %button.btn-primary{:type => "submit", :name => "save", :onclick => "saveChanges('/admin/#{model[:model_name].downcase}/create/');"}
     %i.icon-ok.icon-white
-    Save #{model[:human_id]}
+    Create #{model[:model_name]}
 :javascript
   $('select').each(function(){
     $(this).select2();

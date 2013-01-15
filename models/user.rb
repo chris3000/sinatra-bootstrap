@@ -64,6 +64,7 @@ class User
   SimpleScaffold.manage_ignore self, ["password_digest", "accept_terms", "_id","_type", "created_at", "updated_at", "first_name", "last_name", "full_name"]
   SimpleScaffold.edit_ignore self, ["password_digest", "_id","_type", "created_at", "updated_at"]
   SimpleScaffold.edit_add self, [{:field=>"password", :type => String}, {:field=>"password_confirmation", :type => String}]
+  SimpleScaffold.new_ignore self, ["password_digest", "_id","_type", "sign_in_count","created_at", "updated_at"]
   SimpleScaffold.new_add self, [{:field=>"password", :type => String}, {:field=>"password_confirmation", :type => String}]
 
   def human_id

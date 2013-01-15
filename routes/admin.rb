@@ -24,14 +24,20 @@ class MyApp < Sinatra::Application
     haml :'admin/admin_show', :layout => :'admin/admin_layout', :locals =>{:model => model}
   end
 
-  post "/admin/:model/update/:id/?" do
-    xhr_response = {:action => "update"}
+
+  def create_or_update type, params
+    xhr_response = {:action => type.to_s}
     model_name = params['model']
     model_class = get_model_class model_name
-    model_instance = model_class.find(params[:id])
     fields = params[:fields]
+    if type == :update
+      model_instance = model_class.find(params[:id])
+      model_instance.update_attributes fields
+    else #create, I assume
+      model_instance = model_class.create fields
+    end
     associations = params[:associations]
-    model_instance.update_attributes fields
+
     if associations
       associations.each do |assoc_key, assoc_values|
         ref_metadata = model_instance.reflect_on_association(assoc_key.to_sym)
@@ -45,7 +51,7 @@ class MyApp < Sinatra::Application
               model_instance.send(assoc_name) << assoc_instance
             else
               model_instance.send("#{assoc_name}=", assoc_instance)
-              model_instance.save!
+              model_instance.save
             end
 
           elsif assoc_action == "remove"
@@ -53,23 +59,58 @@ class MyApp < Sinatra::Application
               model_instance.send(assoc_name).delete assoc_instance
             else
               model_instance.send("#{assoc_name}=", assoc_instance)
-              model_instance.save!
+              model_instance.save
             end
           end
         end
       end
     end
+    xhr_response[:id] = model_instance.id
     if model_instance.errors.any?
       puts "there were errors! #{model_instance.errors.inspect}"
       xhr_response[:status] = "failure"
-      xhr_response[:msg] = "Update of #{params[:id]} failed."
-      xhr_response[:errors] = model_instance.errors.messages.to_json
+      if type == :update
+        xhr_response[:msg] = "Update of #{model_instance.human_id} failed."
+      elsif type == :create
+        xhr_response[:msg] = "Creation of #{model_name}failed."
+      end
+      xhr_response[:errors] = model_instance.errors.messages
     else
       xhr_response[:status] = "success"
-      xhr_response[:msg] = "Update of #{params[:id]} successful."
+      if type == :update
+        xhr_response[:msg] = "Update of #{model_instance.human_id} successful."
+      elsif type == :create
+        xhr_response[:msg] = "Creation of #{model_instance.human_id} successful."
+      end
     end
-    puts params.inspect
-    json xhr_response
+    xhr_response
+  end
+
+  post "/admin/:model/update/:id/?" do
+    xhr_response= create_or_update(:update, params)
+    puts "is this nil? #{xhr_response.inspect}"
+    puts "this is json #{xhr_response.to_json}"
+    json(xhr_response, :encoder => :to_json, :content_type => 'application/json')
+  end
+
+  post "/admin/:model/create/?" do
+    xhr_response= create_or_update(:create, params)
+    puts "is this nil? #{xhr_response.inspect}"
+    json(xhr_response, :encoder => :to_json, :content_type => 'application/json')
+  end
+
+  get "/admin/:model/new/?" do
+    model_class = get_model_class params['model']
+    assoc_classes = model_class.scaffold_association_classes
+    assoc_lists = {}
+    assoc_classes.each do |ass_class_str|
+      ass_class = get_model_class ass_class_str
+      list_items = ass_class.scaffold_list_items
+      assoc_lists[list_items[:class_name].to_s.downcase.to_sym] = list_items
+    end
+    model = model_class.scaffold_new_headings
+    puts "new model - #{model.inspect}"
+    haml :'admin/admin_new', :layout => :'admin/admin_layout', :locals =>{:model => model, :association_lists => assoc_lists}
   end
 
   get "/admin/:model/edit/:id/?" do
