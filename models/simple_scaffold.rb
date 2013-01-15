@@ -72,10 +72,14 @@ module SimpleScaffold
         ids = []
         max = 5
         id_amount = (max if count > max) || count
-        if !heading_titles
+        unless heading_titles
           objs= (parent.send("#{name}").limit(id_amount) if it_has_many) || [parent.send("#{name}")]
           objs.each do |obj|
-            ids << {:id => obj.id, :human_id => obj.human_id}
+            if obj.nil?
+              count = 0
+            else
+              ids << {:id => obj.id, :human_id => obj.human_id}
+            end
           end
         end
         value_obj = (name.to_sym if heading_titles)||({name.to_sym => {:class_name => class_name, :count => count, :ids => ids }})

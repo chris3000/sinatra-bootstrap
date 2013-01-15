@@ -25,8 +25,8 @@ class User
   attr_accessor         :password, :password_confirmation
   attr_protected        :password_hash
   attr_readonly         :username
-  has_many :authentications, :dependent => :delete
-  has_many :things, :dependent => :delete
+  has_many :authentications
+  has_many :things
   #belongs_to :something
   #has_and_belongs_to_many :something_else
   #validations
@@ -115,7 +115,6 @@ class User
     end
     usr
   end
-
   #return user if username and password are correct.
   #return error hash if something went wrong
   def self.authenticate(username, password)

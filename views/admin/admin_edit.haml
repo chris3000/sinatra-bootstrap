@@ -89,8 +89,10 @@
                 #{av_key}
               %span.badge #{av_value[:count]}
             - mult = "multiple" if assoc.to_s =~ /many/
-            %select{:id => "#{av_key}---#{av_value[:class_name]}", :multiple => mult, :style => "width:400px;"}
+            %select{:id => "#{av_key}", :multiple => mult, :style => "width:400px;"}
               -id_ignore = []
+              -if mult.nil?
+                %option{:value => "--none--"} --none--
               -av_value[:ids].each do |id|
                 - id_ignore << id[:id]
                 %option{:value => "#{id[:id]}", :selected=>true} #{id[:human_id]}
@@ -112,14 +114,18 @@
         ass_sub = associationsSubmit[$(this).attr('id')];
        }
        if (e.added != null){
-          ass_sub[e.added.id] = "add";
+         ass_sub[e.added.id] = "add";
        }
        else if (e.removed != null){
          ass_sub[e.removed.id] = "remove";
        } else {
-        console.log(e.val)
+        //console.log(e.val)
         var record = {};
-        record[e.val]="add";
+        if (e.val == '--none--'){
+          record[e.val] = "remove";
+        }else {
+          record[e.val]="add";
+        }
         associationsSubmit[$(this).attr('id')] = record;
        }
        console.log(associationsSubmit);

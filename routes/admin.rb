@@ -26,14 +26,41 @@ class MyApp < Sinatra::Application
 
   post "/admin/:model/update/:id/?" do
     xhr_response = {:action => "update"}
-    model_class = get_model_class params['model']
+    model_name = params['model']
+    model_class = get_model_class model_name
     model_instance = model_class.find(params[:id])
     fields = params[:fields]
     associations = params[:associations]
     model_instance.update_attributes fields
+    if associations
+      associations.each do |assoc_key, assoc_values|
+        ref_metadata = model_instance.reflect_on_association(assoc_key.to_sym)
+        assoc_class = get_model_class ref_metadata.class_name
+        assoc_name = ref_metadata.name
+        assoc_macro = ref_metadata.macro #has_many, belongs_to, etc
+        assoc_values.each do |assoc_id, assoc_action|
+          assoc_instance = (assoc_class.find assoc_id unless assoc_id.include?("none") ) || nil
+          if assoc_action == "add"
+            if assoc_macro =~ /many/
+              model_instance.send(assoc_name) << assoc_instance
+            else
+              model_instance.send("#{assoc_name}=", assoc_instance)
+              model_instance.save!
+            end
+
+          elsif assoc_action == "remove"
+            if assoc_macro =~ /many/
+              model_instance.send(assoc_name).delete assoc_instance
+            else
+              model_instance.send("#{assoc_name}=", assoc_instance)
+              model_instance.save!
+            end
+          end
+        end
+      end
+    end
     if model_instance.errors.any?
       puts "there were errors! #{model_instance.errors.inspect}"
-      status 400
       xhr_response[:status] = "failure"
       xhr_response[:msg] = "Update of #{params[:id]} failed."
       xhr_response[:errors] = model_instance.errors.messages.to_json
