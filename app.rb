@@ -9,6 +9,7 @@ require 'omniauth'
 require 'omniauth-facebook'
 require 'omniauth-twitter'
 require 'mongoid'
+
 #require 'omniauth-identity'
 
 class MyApp < Sinatra::Application

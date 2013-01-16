@@ -11,7 +11,11 @@ class MyApp < Sinatra::Application
     user = User.authenticate(params[:username], params[:password])
     if user.is_a? User
       session[:user_id] = user.id
-      redirect("/account")
+      if user.verified
+        redirect("/account")
+      else
+        redirect("/signup/link_acct")
+      end
     elsif user.is_a? Hash
        flash[:error] = user[:error]
       haml :login
@@ -36,6 +40,24 @@ class MyApp < Sinatra::Application
     user = current_user
     redirect('/') if user.verified?
     haml :link_acct, :locals => {:user => user}
+  end
+
+  #This should absolutely not be sent synchronously, but for simplicity, I'm doing it.
+  #email jobs should be put into an async queue and not sent in sinatra.
+  get '/signup/verify/email' do
+    redirect('/signup') unless authenticated?
+    user = current_user
+    email_params = {	:to => user.email,
+                      :from => "cdkf92@gmail.com",
+                      :via => "smtp",
+                      :subject => "Please Verify your Account at '#{settings.site_name}'",
+                      :body => "Please verify your account.",
+                      :html_body => "<h1>PLEASE VERIFY YOUR ACCT</h1>"
+    }
+    email = EmailInstance.new email_params
+    reply = Mailer.send "gmail", email
+    puts reply
+    haml :verify_email, :locals => {:user => user}
   end
 
   get '/logout' do

@@ -1,6 +1,6 @@
-#this should never get copied into any repo!
 ---
-  via: 'smtp',
+gmail:
+# set via: 'smtp' in email instance
   address: 'smtp.gmail.com',
   port: '587',
   enable_starttls_auto: true,
