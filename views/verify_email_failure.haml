@@ -1,0 +1,16 @@
+.container
+  %h5
+    -if @failure_reason == :verify_not_found
+      Sorry, we couldn't find your link in our system.
+    -if @failure_reason == :user_not_found
+      Sorry, there's no user associated with this link
+    -if @failure_reason == :expired
+      Sorry, this link has expired.
+  You can
+  %a{:href => "/signup/link_acct"} click here
+  if you want to receive another email, or you can link your account with Facebook or Twitter.
+  %br/
+  #verify_facebook
+    %a{:href=>"/auth/facebook"} Link to facebook
+  #verify_twitter
+    %a{:href=>"/auth/twitter"} Link to Twitter

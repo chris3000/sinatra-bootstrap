@@ -1,0 +1,11 @@
+#content{:style => "width: 75%; padding-bottom: 5px;"}
+  Greetings
+  %strong
+    ="#{user.username}!"
+  Thanks for joining our site.  Please click the link below, or copy the link into a browser.
+  %br
+  This will verify your email address and will give you full access to our site.
+#verify_link{:style => "padding: 5px; background: #EEEEEE;"}
+  - url = "http://#{settings.domain}/auth/link/#{email_verify.small_id}"
+  %a{:href => "#{url}"}
+    =url

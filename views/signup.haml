@@ -10,19 +10,22 @@
           - msg[1].each do |msg_text|
             %dd
               = msg_text
-%form{ :action => "/signup", :method => "post"}
-  %fieldset
-    %label{:for => :username} Username
-    - username_ph = user.username ||= "" unless user.nil?
-    %input{:type => "text", :name => :username, :class => "input-xlarge", :value => "#{username_ph}"}
-    - email_ph = user.email ||= "" unless user.nil?
-    %label{:for => :email} Email
-    %input{:type => "text", :name => :email, :class => "input-xlarge", :value => "#{email_ph}"}
-    %label{:for => :password} Password
-    %input{:type => "password", :name => :password, :class => "input-xlarge"}
-    %label{:for => :password_confirmation} Confirm Password
-    %input{:type => "password", :name => :password_confirmation, :class => "input-xlarge"}
-    %label{:for => :accept_terms, :class => "checkbox"}
-      %input{:type => "checkbox", :name => :accept_terms, :value => "true"} I accept the Terms and Conditions of this site.
-  %input{:type => "submit", :value => "Create an account", :class => "btn.btn-success"}
-%br
+.well.well-small
+  %form{ :action => "/signup", :method => "post"}
+    %fieldset
+      %label{:for => :username} Username
+      - username_ph = user.username ||= "" unless user.nil?
+      %input{:type => "text", :name => :username, :class => "input-xlarge", :value => "#{username_ph}"}
+      - email_ph = user.email ||= "" unless user.nil?
+      %label{:for => :email} Email
+      %input{:type => "text", :name => :email, :class => "input-xlarge", :value => "#{email_ph}"}
+      %label{:for => :password} Password
+      %input{:type => "password", :name => :password, :class => "input-xlarge"}
+      %label{:for => :password_confirmation} Confirm Password
+      %input{:type => "password", :name => :password_confirmation, :class => "input-xlarge"}
+      %label{:for => :accept_terms, :class => "checkbox"}
+        %input{:type => "checkbox", :name => :accept_terms, :value => "true"} I accept the Terms and Conditions of this site.
+    %input{:type => "submit", :value => "Create an account", :class => "btn.btn-success"}
+%h5
+  Already have an account? You can
+  %a{:href => "/login"} log in here.

@@ -3,6 +3,7 @@
 require_relative 'user'
 require_relative 'authentication'
 require_relative 'thing'
+require_relative 'email_verify'
 
 configure :development do
   puts "configuring development in model init"

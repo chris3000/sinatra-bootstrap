@@ -1,6 +1,6 @@
 # encoding: utf-8
 class MyApp < Sinatra::Application
-
+  require 'nokogiri'
 
   get "/login" do
     @title  = "Login"
@@ -47,17 +47,59 @@ class MyApp < Sinatra::Application
   get '/signup/verify/email' do
     redirect('/signup') unless authenticated?
     user = current_user
+    email_verify = user.emailverify
+    if email_verify
+      puts "i got email-verify from user #{user.human_id}"
+      email_verify.reset_expire
+      email_verify.save
+    else
+      email_verify = Emailverify.new
+      user.emailverify = email_verify
+    end
+    puts ("email verify= #{email_verify.human_id} -- #{email_verify.inspect}")
+    html = haml(:"email/verify_email_template", :layout => :'email/email_layout', :locals =>{:user => user, :email_verify => email_verify})
+    text = Nokogiri::HTML(html).text
     email_params = {	:to => user.email,
                       :from => "cdkf92@gmail.com",
                       :via => "smtp",
                       :subject => "Please Verify your Account at '#{settings.site_name}'",
-                      :body => "Please verify your account.",
-                      :html_body => "<h1>PLEASE VERIFY YOUR ACCT</h1>"
+                      :body => text,
+                      :html_body => html
     }
     email = EmailInstance.new email_params
     reply = Mailer.send "gmail", email
-    puts reply
     haml :verify_email, :locals => {:user => user}
+  end
+
+  get "/auth/link/:link_id" do
+    success = true
+    puts "I got id #{params["link_id"]}"
+    email_verify = Emailverify.find_by_small_id(params["link_id"])
+    if email_verify.nil?
+      success = false
+      @failure_reason= :verify_not_found
+    else
+      if email_verify.expired?
+        success = false
+        @failure_reason= :expired
+      end
+      user = email_verify.user
+      if user
+        if success
+          user.verified = true
+          user.save!
+          current_user= user
+        end
+      else
+        @failure_reason= :user_not_found
+        success = false
+      end
+    end
+    if success
+      haml :verify_email_success, :locals => {:user => user}
+    else
+      haml :verify_email_failure
+    end
   end
 
   get '/logout' do

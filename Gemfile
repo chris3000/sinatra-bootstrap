@@ -13,7 +13,7 @@ gem 'omniauth-twitter', "~> 0.0.14"
 gem 'rack-flash3', "~> 1.0.1"
 gem 'bcrypt-ruby', "~> 3.0.1"
 gem 'thin'
-gem 'pony', "-> 1.4"
+gem 'pony', "~> 1.4"
 group :test do
 #  gem 'test-unit'
   gem 'rspec'

@@ -1,4 +1,4 @@
-require_relative 'simple_scaffold.rb'
+require_relative 'modules/simple_scaffold.rb'
 class Authentication
   include Mongoid::Document
   include Mongoid::Timestamps # adds automagic fields created_at, updated_at

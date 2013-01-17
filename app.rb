@@ -64,6 +64,12 @@ class MyApp < Sinatra::Application
       "#{count || 0} #{word}"
     end
 
+    def current_user= user
+      @current_user = user if user.is_a? User
+      @current_user ||= User.where(:id => session[:user_id]).first if user.is_a? String
+      session[:user_id] = @current_user.id if @current_user
+    end
+
     def current_user
       @current_user ||= User.where(:id => session[:user_id]).first if session[:user_id]
     end

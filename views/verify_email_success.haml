@@ -1,0 +1,11 @@
+.container
+  %h5
+    ="You're all set, #{user.username}! "
+  %br/
+  Your account is now verified.  You may optionally link this account to Facebook and Twitter if you want.
+  %br/
+  Linking your account allows for password-free login and allows for extra functionality on this site.
+  #verify_facebook
+    %a{:href=>"/auth/facebook"} Link to facebook
+  #verify_twitter
+    %a{:href=>"/auth/twitter"} Link to Twitter

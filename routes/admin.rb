@@ -2,7 +2,7 @@
 class MyApp < Sinatra::Application
   ['/admin', '/admin/*'].each do |path|
     before path do
-      @model_list = ["User","Authentication", "Thing"]
+      @model_list = ["User","Authentication", "Thing", "Emailverify"]
       session['db_list']=20
     end
   end
@@ -177,4 +177,8 @@ class MyApp < Sinatra::Application
     end
   end
 
+  get "/admin/email-render/:template/?" do
+    user = User.first
+    haml :"email/#{params[:template]}", :layout => :'email/email_layout', :locals =>{:user => user}
+  end
 end

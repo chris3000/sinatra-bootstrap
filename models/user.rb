@@ -3,7 +3,7 @@
 #Also, hat tip to: http://blog.eizesus.com/2010/03/creating-a-rails-authentication-system-on-mongoid/
 
 require 'bcrypt'
-require_relative 'simple_scaffold.rb'
+require_relative 'modules/simple_scaffold.rb'
 class User
 
   include Mongoid::Document
@@ -27,6 +27,7 @@ class User
   attr_readonly         :username
   has_many :authentications
   has_many :things
+  has_one :emailverify
   #belongs_to :something
   #has_and_belongs_to_many :something_else
   #validations
