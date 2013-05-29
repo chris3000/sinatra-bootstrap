@@ -1,0 +1,22 @@
+= haml :xeditable
+.container
+  %dl.dl-horizontal
+    %dt
+      Username
+    %dd
+      - if this_user_page
+        This is your page!
+      = user.username
+    %dt
+      Email
+    %dd
+      = user.email
+    %dt
+      verified?
+    %dd
+      = user.verified ? "Yes" : "No"
+    - user.authentications.each do |auth|
+      %dt
+        Provider
+      %dd
+        = auth.provider

@@ -1,3 +1,4 @@
+= haml :xeditable
 .container
   %dl.dl-horizontal
     %dt
@@ -9,6 +10,20 @@
     %dd
       = user.email
     %dt
+      First Name
+    %dd
+      %a#first_name{:href=>"#", :data=>{:pk=>user.id}}
+        = user.first_name
+    %dt
+      Last Name
+    %dd
+      %a#last_name{:href=>"#", :data=>{:pk=>user.id}}
+        = user.last_name
+    %dt
+      Full Name
+    %dd
+      = user.full_name || "not set"
+    %dt
       verified?
     %dd
       = user.verified ? "Yes" : "No"
@@ -17,3 +32,7 @@
         Provider
       %dd
         = auth.provider
+/make editable if this is the user
+:javascript
+  $('#first_name').editable({type: 'text', url: '/account', title: 'Edit First Name', params: {cls:"User"}});
+  $('#last_name').editable({type: 'text', url: '/account', title: 'Edit Last Name', params: {cls:"User"}});

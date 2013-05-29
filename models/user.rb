@@ -137,6 +137,28 @@ class User
     inc(:sign_in_count,1)
   end
 
+  def first_name=(fn)
+    super(fn)
+    set_full_name
+    return full_name
+  end
+
+  def last_name=(ln)
+    super(ln)
+    set_full_name
+    return full_name
+  end
+
+  def full_name
+    return super || "[not set]"
+  end
+
+  def set_full_name
+    fn = self.first_name || "[no first name]"
+    ln = self.last_name || "[no last name]"
+    self.full_name= "#{fn} #{ln}"
+  end
+
   def self.password_correct?(username, password)
 
     user_pass == password
