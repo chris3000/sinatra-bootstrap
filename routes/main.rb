@@ -13,7 +13,6 @@ class MyApp < Sinatra::Application
 
   post "/account" do
     user = current_user
-    puts params.inspect
     this_user_page =  (params[:pk].to_s == user.id.to_s)
     if !this_user_page
       puts "not allowed- #{params[:pk]}, #{user.id}, #{this_user_page}"
@@ -22,11 +21,13 @@ class MyApp < Sinatra::Application
       if params[:cls] && params[:name] && params[:value] && params[:pk]
         obj = Kernel.const_get(params[:cls]).find(params[:pk])
         if obj
-          ret_str = obj.send("#{params[:name]}=",params[:value])
-          #obj.first_name= params[:value]
+          ret={}
+          ret_obj = obj.send("#{params[:name]}=",params[:value])
           obj.save
-          puts "set #{obj.class.to_s}.#{params[:name]} to #{obj.send(params[:name])}"
-
+          #puts "set #{obj.class.to_s}.#{params[:name]} to #{obj.send(params[:name])}"
+          ret[:success] = true
+          ret[:return_info] = ret_obj
+          json ret
         end
       else
         500

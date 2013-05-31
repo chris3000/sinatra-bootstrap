@@ -140,13 +140,13 @@ class User
   def first_name=(fn)
     super(fn)
     set_full_name
-    return full_name
+    return {:full_name=>full_name}
   end
 
   def last_name=(ln)
     super(ln)
     set_full_name
-    return full_name
+    return {:full_name=>full_name}
   end
 
   def full_name
