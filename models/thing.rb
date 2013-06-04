@@ -1,25 +1,27 @@
 require_relative 'modules/simple_scaffold.rb'
+require_relative 'modules/slugur.rb'
 class Thing
   include Mongoid::Document
   include Mongoid::Timestamps # adds automagic fields created_at, updated_at
   include SimpleScaffold
-
-  field :thing_name, :type => String
+  include Slugur
+  field :thing_name,:type => String
   field :something, :type => String
-
   belongs_to :user
 
   validates_presence_of :thing_name,
                         :message => "Thing name is Required."
   validates_length_of :thing_name,
                       :minimum => 3,
-                      :maximum => 30,
-                      :message => "Names must be between 3 and 30 characters"
-  validates_format_of :thing_name,
-                      :with => /^[-\w\._]+$/i,
-                      :message => "should only contain letters, numbers, '.', '-', or '_'"
+                      :maximum => 300,
+                      :message => "Names must be between 3 and 300 characters"
   validates_presence_of :something,
                         :message => "Something is Required."
+
+  def thing_name= newname
+    super(newname)
+    slugify(newname, 50)
+  end
 
   #------ scaffold   -------#
   #scaffold stuff
